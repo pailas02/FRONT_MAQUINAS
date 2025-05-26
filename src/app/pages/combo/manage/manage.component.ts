@@ -1,30 +1,30 @@
-// src/app/pages/combo/manage/manage.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Combo } from 'src/app/models/combo.model';
+import { Servicio } from 'src/app/models/servicio.model'; // Para el selector de servicio
 import { ComboService } from '../../../services/combo/combos.service';
+import { ServicioService } from '../../../services/servicio/servicio.service'; // Para obtener la lista de servicios
 import Swal from 'sweetalert2';
-import { of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { Servicio } from 'src/app/models/servicio.model';
-import { ServicioService } from 'src/app/services/servicio/servicio.service';
+import { of, forkJoin } from 'rxjs';
+import { catchError, finalize } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-manage', 
-  templateUrl: './manage.component.html', 
-  styleUrls: ['./manage.component.scss'] 
+  selector: 'app-manage', // Selector de tu componente
+  templateUrl: './manage.component.html', // Archivo HTML asociado
+  styleUrls: ['./manage.component.scss']
 })
-export class ManageComponent implements OnInit { // <-- La clase se llama ManageComponent
+export class ManageComponent implements OnInit {
+
   mode: 'view' | 'create' | 'update' = 'create';
   combo: Combo;
+  servicios: Servicio[] = []; // Lista de servicios para el dropdown
   isLoading: boolean = false;
   errorLoading: boolean = false;
-  serviciosDisponibles: Servicio[] = [];
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private comboService: ComboService,
-    private servicioService: ServicioService,
+    private servicioService: ServicioService, // Inyecta el servicio de Servicio
     private router: Router
   ) {
     this.combo = new Combo();
@@ -45,55 +45,55 @@ export class ManageComponent implements OnInit { // <-- La clase se llama Manage
       return;
     }
 
-    this.loadServiciosDisponibles();
-
-    if (this.mode === 'view' || this.mode === 'update') {
-      const comboId = this.activatedRoute.snapshot.params.id;
-
-      if (comboId) {
-        this.getCombo(comboId);
-      } else {
-        console.error('ID del combo no proporcionado para los modos View o Update.');
-        Swal.fire('Error', 'ID de combo no válido.', 'error');
-        this.router.navigate(['/combo/list']);
-      }
-    }
+    this.loadInitialData();
   }
 
-  loadServiciosDisponibles(): void {
-    this.servicioService.list().pipe(
-      catchError(error => {
-        console.error('Error al cargar servicios disponibles:', error);
-        return of([]);
-      })
-    ).subscribe(
-      (servicios: Servicio[]) => {
-        this.serviciosDisponibles = servicios;
-        console.log('Servicios disponibles cargados:', this.serviciosDisponibles);
-      }
-    );
-  }
-
-  getCombo(id: number): void {
+  loadInitialData(): void {
     this.isLoading = true;
     this.errorLoading = false;
-    this.comboService.view(id).pipe(
+
+    // Cargar la lista de servicios siempre, ya que la necesitamos para el select
+    const servicios$ = this.servicioService.list().pipe(
       catchError(error => {
-        console.error('Error al obtener el combo:', error);
+        console.error('Error al cargar servicios:', error);
+        Swal.fire('Error', 'No se pudieron cargar los servicios para la selección.', 'error');
         this.errorLoading = true;
-        Swal.fire('Error', 'No se pudo cargar el combo. Por favor, inténtalo de nuevo.', 'error');
-        this.router.navigate(['/combo/list']);
-        return of(null);
+        return of([]); // Retorna un array vacío para que el forkJoin no falle
       })
-    ).subscribe(
-      (combo: Combo | null) => {
-        if (combo) {
-          this.combo = combo;
-          console.log('Combo cargado:', this.combo);
-        }
-        this.isLoading = false;
-      }
     );
+
+    // Si estamos en modo ver o actualizar, también cargamos el combo
+    const combo$ = (this.mode === 'view' || this.mode === 'update') ?
+      this.comboService.view(this.activatedRoute.snapshot.params.id).pipe(
+        catchError(error => {
+          console.error('Error al obtener el combo:', error);
+          Swal.fire('Error', 'No se pudo cargar el combo. Por favor, inténtalo de nuevo.', 'error');
+          this.router.navigate(['/combo/list']);
+          this.errorLoading = true;
+          return of(null); // Retorna null para que el forkJoin no falle
+        })
+      ) : of(null); // En modo crear, no hay combo que cargar
+
+    forkJoin({
+      servicios: servicios$,
+      combo: combo$
+    }).pipe(
+      finalize(() => {
+        this.isLoading = false;
+      })
+    ).subscribe(data => {
+      this.servicios = data.servicios;
+      if (data.combo) {
+        this.combo = data.combo;
+      }
+      console.log('Datos iniciales cargados (Servicios y Combo si aplica):', data);
+    });
+  }
+
+  // Método para obtener el nombre del servicio para el select (si lo necesitas mostrar en el combo de selección)
+  getServicioNombre(servicioId: number | undefined): string {
+    const servicio = this.servicios.find(s => s.id === servicioId);
+    return servicio ? servicio.nombre || 'Sin nombre' : 'Seleccione un servicio';
   }
 
   back(): void {
@@ -111,9 +111,7 @@ export class ManageComponent implements OnInit { // <-- La clase se llama Manage
   create(): void {
     this.isLoading = true;
     const comboToCreate = { ...this.combo };
-    delete comboToCreate.id;
-    delete comboToCreate.created_at;
-    delete comboToCreate.updated_at;
+    delete comboToCreate.id; // Asegúrate de que el ID no se envíe al crear
 
     this.comboService.create(comboToCreate).pipe(
       catchError(error => {
@@ -137,8 +135,6 @@ export class ManageComponent implements OnInit { // <-- La clase se llama Manage
   update(): void {
     this.isLoading = true;
     const comboToUpdate = { ...this.combo };
-    delete comboToUpdate.created_at;
-    delete comboToUpdate.updated_at;
 
     this.comboService.update(comboToUpdate).pipe(
       catchError(error => {
@@ -161,11 +157,7 @@ export class ManageComponent implements OnInit { // <-- La clase se llama Manage
 
   delete(id: number | undefined): void {
     if (id === undefined || isNaN(id)) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'ID de combo no válido para eliminar.'
-      });
+      Swal.fire({ icon: 'error', title: 'Error', text: 'ID de combo no válido para eliminar.' });
       return;
     }
 

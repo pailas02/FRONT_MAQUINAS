@@ -1,56 +1,61 @@
-<div class="header bg-gradient-danger pb-8 pt-5 pt-md-8">
-</div>
-<!-- Page content -->
+<div class="header bg-gradient-warning pb-8 pt-5 pt-md-8"></div>
 <div class="container-fluid mt--7">
-  <!-- Table -->
   <div class="row">
     <div class="col">
       <div class="card shadow">
-        <div class="card-header bg-transparent">
-          <h3 class="mb-0" *ngIf="mode==1">Detalle</h3>
-          <h3 class="mb-0" *ngIf="mode==2">Creación</h3>
-          <h3 class="mb-0" *ngIf="mode==3">Actualización</h3>
+        <div class="card-header">
+          <h3 class="mb-0" *ngIf="mode === 'create'">Registrar Novedad</h3>
+          <h3 class="mb-0" *ngIf="mode === 'update'">Editar Novedad</h3>
+          <h3 class="mb-0" *ngIf="mode === 'view'">Detalle de la Novedad</h3>
         </div>
         <div class="card-body container">
-          <div class="row">
-            <div class="col-3">ID</div>
-            <div class="col-9"><input type="number" class="form-control" [(ngModel)]="novedad.id" disabled></div>
-          </div>
-          <br>
-          <div class="row">
-            <div class="col-3">Tipo</div>
-            <div class="col-9"><input type="text" class="form-control" [(ngModel)]="novedad.tipo" [disabled]="mode==1">
+          <form (ngSubmit)="onSubmit()" *ngIf="!isLoading">
+            <div class="row mb-3">
+              <div class="col-md-3">Tipo</div>
+              <div class="col-md-9">
+                <input class="form-control" [(ngModel)]="novedad.tipo" name="tipo" [disabled]="mode === 'view'" required>
+              </div>
             </div>
-          </div>
-          <br>
-          <div class="row">
-            <div class="col-3">Descripción</div>
-            <div class="col-9"><input type="text" class="form-control" [(ngModel)]="novedad.descripcion"
-                [disabled]="mode==1"></div>
-          </div>
-          <br>
-          <div class="row">
-            <div class="col-3">Gravedad</div>
-            <div class="col-9"><input type="text" class="form-control" [(ngModel)]="novedad.gravedad"
-                [disabled]="mode==1"></div>
-          </div>
-          <br>
-          <div class="row">
-            <div class="col-3">ID Turno</div>
-            <div class="col-9"><input type="number" class="form-control" [(ngModel)]="novedad.turnoId"
-                [disabled]="mode==1"></div>
-          </div>
-          <br>
-          <div class="row">
-            <div class="col-3"></div>
-            <div class="col-9">
-              <button *ngIf="mode==1" class="btn btn-primary btn-block" (click)="back()">Volver</button>
-              <button *ngIf="mode==2" class="btn btn-primary btn-block" (click)="create()">Crear</button>
-              <button *ngIf="mode==3" class="btn btn-primary btn-block" (click)="update()">Actualizar</button>
+
+            <div class="row mb-3">
+              <div class="col-md-3">Descripción</div>
+              <div class="col-md-9">
+                <textarea class="form-control" [(ngModel)]="novedad.descripcion" name="descripcion" [disabled]="mode === 'view'" required></textarea>
+              </div>
             </div>
+
+            <div class="row mb-3">
+              <div class="col-md-3">Gravedad</div>
+              <div class="col-md-9">
+                <select class="form-control" [(ngModel)]="novedad.gravedad" name="gravedad" [disabled]="mode === 'view'" required>
+                  <option value="">Seleccione...</option>
+                  <option value="Alta">Alta</option>
+                  <option value="Media">Media</option>
+                  <option value="Baja">Baja</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-3">Turno ID</div>
+              <div class="col-md-9">
+                <input type="number" class="form-control" [(ngModel)]="novedad.turno_id" name="turno_id" [disabled]="mode === 'view'" required>
+              </div>
+            </div>
+
+            <div class="text-right mt-4">
+              <button class="btn btn-secondary mr-2" type="button" (click)="back()">Volver</button>
+              <button *ngIf="mode !== 'view'" class="btn btn-primary" type="submit">
+                {{ mode === 'create' ? 'Crear' : 'Actualizar' }}
+              </button>
+            </div>
+          </form>
+
+          <div *ngIf="isLoading" class="text-center my-4">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p class="mt-2">Cargando novedad...</p>
           </div>
         </div>
-
       </div>
     </div>
   </div>

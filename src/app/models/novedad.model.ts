@@ -1,12 +1,9 @@
-import { Turno } from "./turno.model";
-
 export class Novedad {
-    id?: number;
-    turnoId?: Turno;
-    tipo?: string;
-    descripcion?: string;
-    evidencia?: string;
-    estado?: string;
-    fecha?: Date;
-    gravedad?: string;
+  id?: number;
+  tipo!: string;
+  descripcion!: string;
+  gravedad!: string;
+  turno_id!: number;
+  created_at?: string;
+  updated_at?: string;
 }

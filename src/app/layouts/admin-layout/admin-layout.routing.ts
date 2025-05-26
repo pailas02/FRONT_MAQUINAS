@@ -5,6 +5,7 @@ import { IconsComponent } from '../../pages/icons/icons.component';
 import { MapsComponent } from '../../pages/maps/maps.component';
 import { UserProfileComponent } from '../../pages/user-profile/user-profile.component';
 import { TablesComponent } from '../../pages/tables/tables.component';
+import { AuthenticatedGuard } from 'src/app/gurds/authenticated.guard';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent },
@@ -23,6 +24,7 @@ export const AdminLayoutRoutes: Routes = [
     },
     {
         path: 'cuota',
+        canActivate: [AuthenticatedGuard],
         children: [
           {
             path: '',
@@ -125,7 +127,7 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: () => import('src/app/pages/gps/gps.module').then(m => m.GpsModule)
+            loadChildren: () => import('src/app/pages/gps/gps.module').then(m => m.GPSModule)
           }
         ]
     },

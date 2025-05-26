@@ -1,31 +1,34 @@
-// src/app/services/combo/combo.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Combo } from 'src/app/models/combo.model'; // Asegúrate de que la ruta sea correcta
+import { Combo } from 'src/app/models/combo.model';
+import { environment } from 'src/environments/environment';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ComboService {
-  private apiUrl = 'http://127.0.0.1:3333/combos'; // Ajusta esta URL a tu endpoint de combos
+  private apiUrl = `${environment.url_ms_negocio}/combos`;
 
   constructor(private http: HttpClient) { }
 
   list(): Observable<Combo[]> {
-    return this.http.get<Combo[]>(this.apiUrl);
+    return this.http.get<{ data: Combo[] }>(this.apiUrl).pipe(
+      map(response => response.data) // Asumo que tu API devuelve { data: [...] }
+    );
   }
 
   view(id: number): Observable<Combo> {
     return this.http.get<Combo>(`${this.apiUrl}/${id}`);
   }
 
-  create(combo: Combo): Observable<Combo> {
-    return this.http.post<Combo>(this.apiUrl, combo);
+  create(newCombo: Combo): Observable<Combo> {
+    return this.http.post<Combo>(this.apiUrl, newCombo);
   }
 
-  update(combo: Combo): Observable<Combo> {
-    return this.http.put<Combo>(`${this.apiUrl}/${combo.id}`, combo);
+  update(theCombo: Combo): Observable<Combo> {
+    return this.http.put<Combo>(`${this.apiUrl}/${theCombo.id}`, theCombo);
   }
 
   delete(id: number): Observable<any> {

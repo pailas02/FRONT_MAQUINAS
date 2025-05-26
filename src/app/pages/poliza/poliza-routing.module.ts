@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { ListPolizaComponent } from './list/list.component';
-import { ManageComponent } from './manage/manage.component';
+import { ListPolizaMaquinaComponent } from './list/list.component';
+import { ManagePolizaMaquinaComponent } from './manage/manage.component';
 
 const routes: Routes = [
-  { path: 'list', component: ListPolizaComponent },
-  { path: 'create', component: ManageComponent },
-  { path: 'update/:id', component: ManageComponent },
-  { path: 'view/:id', component: ManageComponent },
-  
+  { path: 'list', component: ListPolizaMaquinaComponent },
+  { path: 'create', component: ManagePolizaMaquinaComponent },
+  { path: 'update/:id', component: ManagePolizaMaquinaComponent },
+  { path: 'view/:id', component: ManagePolizaMaquinaComponent },
+
 ];
 
 @NgModule({

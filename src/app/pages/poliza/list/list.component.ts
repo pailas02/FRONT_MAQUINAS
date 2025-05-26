@@ -1,60 +1,61 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Poliza } from 'src/app/models/poliza.model'; 
-import { PolizaService } from 'src/app/services/poliza/poliza.service'; 
+import { PolizaMaquina } from 'src/app/models/poliza.model';
+import { PolizaMaquinaService } from 'src/app/services/poliza/poliza.service';
 import Swal from 'sweetalert2';
+import { finalize } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-list-policy',
-  templateUrl: './list.component.html',
-  styleUrls: ['./list.component.scss']
+  selector: 'app-list-poliza-maquina',
+  templateUrl: './list.component.html'
 })
-export class ListPolizaComponent implements OnInit {
+export class ListPolizaMaquinaComponent implements OnInit {
+  polizas: PolizaMaquina[] = [];
+  isLoading = true;
 
-  polizas: Poliza[] = []; // Cambié 'policies' a 'polizas' para reflejar el cambio al español
-
-  // Inyecta el servicio PolicyService y Router (si lo necesitas)
-  constructor(private polizaService: PolizaService , private router: Router) { }
+  constructor(private service: PolizaMaquinaService, private router: Router) {}
 
   ngOnInit(): void {
-    // Llama al servicio para obtener la lista de pólizas
-    this.polizaService.list().subscribe(data => {
-      this.polizas = data; // Asigna los datos a la propiedad polizas
-    }, error => {
-      console.error('Error al cargar las pólizas:', error);
-      this.polizas = []; // Asegura que polizas esté inicializado incluso si hay un error
+    this.load();
+  }
+
+  load(): void {
+    this.service.list().pipe(finalize(() => this.isLoading = false)).subscribe({
+      next: data => this.polizas = data,
+      error: () => Swal.fire('Error', 'No se pudieron cargar las pólizas.', 'error')
     });
   }
 
-  // Métodos para editar y eliminar (ajusta el tipo de ID según tu modelo Policy)
-  edit(id: number) {
-    this.router.navigate(['polizas/update', id])
-    // Implementa navegación, ej: this.router.navigate(['/admin/policy/edit', id]);
+  create(): void {
+    this.router.navigate(['/poliza-maquina/create']);
   }
 
-  delete(id: number) {
-  console.log("Delete poliza with id:", id);
+  view(id: number | undefined): void {
+    if (id) this.router.navigate(['/poliza-maquina/view', id]);
+  }
+
+  edit(id: number | undefined): void {
+    if (id) this.router.navigate(['/poliza-maquina/update', id]);
+  }
+
+  delete(id: number | undefined): void {
+    if (!id) return;
     Swal.fire({
-      title: 'Eliminar',
-      text: "Está poliza que quiere eliminar el registro?",
+      title: '¿Estás seguro?',
+      text: 'Esta acción no se puede deshacer.',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Si, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.isConfirmed) { 
-        this.polizaService.delete(id).
-          subscribe(data => {
-            Swal.fire(
-              'Eliminado!',
-              'Registro eliminado correctamente.',
-              'success'
-            )
-            this.ngOnInit();
-          });
+      confirmButtonText: 'Sí, eliminar'
+    }).then(result => {
+      if (result.isConfirmed) {
+        this.service.delete(id).subscribe({
+          next: () => {
+            Swal.fire('Eliminado', 'Registro eliminado.', 'success');
+            this.load();
+          },
+          error: () => Swal.fire('Error', 'No se pudo eliminar.', 'error')
+        });
       }
-    })
+    });
   }
 }

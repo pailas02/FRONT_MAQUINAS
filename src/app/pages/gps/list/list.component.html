@@ -1,11 +1,14 @@
-<div class="header bg-gradient-danger pb-8 pt-5 pt-md-8">
-</div>
+<div class="header bg-gradient-danger pb-8 pt-5 pt-md-8"></div>
+
 <div class="container-fluid mt--7">
   <div class="row">
     <div class="col">
       <div class="card shadow">
-        <div class="card-header bg-transparent">
-          <h3 class="mb-0">Puntos GPS</h3>
+        <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+          <h3 class="mb-0">Listado de Registros GPS</h3>
+          <button class="btn btn-success" (click)="createGPS()">
+            <i class="fas fa-plus"></i> Nuevo Registro GPS
+          </button>
         </div>
         <div class="card-body">
           <div class="table-responsive">
@@ -15,23 +18,38 @@
                   <th scope="col">ID</th>
                   <th scope="col">Latitud</th>
                   <th scope="col">Longitud</th>
-                  <th scope="col">ID Maquina/th>
+                  <th scope="col">ID Máquina</th>
+                  <th scope="col">Creado el</th>
+                  <th scope="col">Actualizado el</th>
                   <th scope="col">Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let gps of gpsPoints">
+                <tr *ngIf="isLoading && gpsRecords.length === 0">
+                  <td colspan="7" class="text-center"> <i class="fas fa-spinner fa-spin"></i> Cargando registros GPS...
+                  </td>
+                </tr>
+                <tr *ngFor="let gps of gpsRecords">
                   <td>{{ gps.id }}</td>
                   <td>{{ gps.latitud }}</td>
                   <td>{{ gps.longitud }}</td>
                   <td>{{ gps.maquina_id }}</td>
+                  <td>{{ gps.created_at | date:'medium' }}</td>
+                  <td>{{ gps.updated_at | date:'medium' }}</td>
                   <td>
-                    <button class="btn btn-sm btn-primary" (click)="edit(gps.id)">Editar</button>
-                    <button class="btn btn-sm btn-danger" (click)="delete(gps.id)">Eliminar</button>
+                    <button class="btn btn-sm btn-info" (click)="view(gps.id)" title="Ver Detalles">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-primary ml-1" (click)="edit(gps.id)" title="Editar">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger ml-1" (click)="delete(gps.id)" title="Eliminar">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
                   </td>
                 </tr>
-                <tr *ngIf="gpsPoints.length === 0">
-                  <td colspan="5" class="text-center">No hay puntos GPS disponibles.</td>
+                <tr *ngIf="!isLoading && gpsRecords.length === 0">
+                  <td colspan="7" class="text-center">No hay registros GPS disponibles.</td>
                 </tr>
               </tbody>
             </table>

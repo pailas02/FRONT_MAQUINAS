@@ -5,63 +5,34 @@
     <div class="col">
       <div class="card shadow">
         <div class="card-header bg-transparent">
-          <h3 class="mb-0" *ngIf="mode === 'view'">Detalle del Combo</h3>
-          <h3 class="mb-0" *ngIf="mode === 'create'">Crear Nuevo Combo</h3>
-          <h3 class="mb-0" *ngIf="mode === 'update'">Actualizar Combo</h3>
+          <h3 class="mb-0">{{ mode === 'create' ? 'Crear Combo' : (mode === 'update' ? 'Editar Combo' : 'Ver Combo') }}</h3>
         </div>
-        <div class="card-body container">
-          <div *ngIf="isLoading" class="text-center my-4">
-            <i class="fas fa-spinner fa-spin fa-2x"></i>
-            <p class="mt-2">Cargando datos...</p>
-          </div>
-
-          <div *ngIf="errorLoading" class="alert alert-danger text-center" role="alert">
-            Error al cargar el combo. Por favor, intente de nuevo.
-          </div>
-
-          <form (ngSubmit)="onSubmit()" #comboForm="ngForm" *ngIf="!isLoading && !errorLoading">
-            <div class="row align-items-center mb-3">
-              <div class="col-md-3">ID</div>
-              <div class="col-md-9">
-                <input type="text" class="form-control" [(ngModel)]="combo.id" name="id" readonly *ngIf="mode !== 'create'">
-                <span *ngIf="mode === 'create'" class="form-control-plaintext">Se asignará automáticamente</span>
-              </div>
+        <div class="card-body">
+          <form (ngSubmit)="onSubmit()" *ngIf="!isLoading && !errorLoading">
+            <div class="form-group">
+              <label for="servicio_id">Servicio</label>
+              <select class="form-control" id="servicio_id" name="servicio_id" [(ngModel)]="combo.servicio_id" [disabled]="mode === 'view'" required>
+                <option [ngValue]="undefined" disabled selected>Seleccione un servicio</option>
+                <option *ngFor="let servicio of servicios" [ngValue]="servicio.id">
+                  {{ servicio.nombre }}
+                </option>
+              </select>
             </div>
 
-            <div class="row align-items-center mb-3">
-              <div class="col-md-3">Servicio Asociado</div>
-              <div class="col-md-9">
-                <select class="form-control" [(ngModel)]="combo.servicio_id" name="servicio_id" [disabled]="mode === 'view'" required>
-                  <option value="" disabled>Selecciona un servicio</option>
-                  <option *ngFor="let servicio of serviciosDisponibles" [value]="servicio.id">
-                    {{ servicio.id }} - {{ servicio.resumen || 'Sin Resumen' }} ({{ servicio.tipo }})
-                  </option>
-                </select>
-              </div>
-            </div>
-
-            <div class="row align-items-center mb-3" *ngIf="mode === 'view' || mode === 'update'">
-              <div class="col-md-3">Creado el</div>
-              <div class="col-md-9">
-                <input type="text" class="form-control" [ngModel]="combo.created_at | date:'medium'" name="created_at" readonly>
-              </div>
-            </div>
-            <div class="row align-items-center mb-3" *ngIf="mode === 'view' || mode === 'update'">
-              <div class="col-md-3">Actualizado el</div>
-              <div class="col-md-9">
-                <input type="text" class="form-control" [ngModel]="combo.updated_at | date:'medium'" name="updated_at" readonly>
-              </div>
-            </div>
-
-            <div class="row mt-4">
-              <div class="col-md-12 text-right">
-                <button type="button" class="btn btn-secondary mr-2" (click)="back()">Volver</button>
-                <button type="submit" class="btn btn-primary" *ngIf="mode === 'create'">Crear</button>
-                <button type="submit" class="btn btn-primary" *ngIf="mode === 'update'">Actualizar</button>
-                <button type="button" class="btn btn-danger ml-2" *ngIf="mode === 'update' || mode === 'view'" (click)="delete(combo.id)">Eliminar</button>
-              </div>
+            <div class="form-group text-right">
+              <button type="button" class="btn btn-secondary" (click)="back()">Volver</button>
+              <button type="submit" class="btn btn-primary ml-2" *ngIf="mode !== 'view'">
+                {{ mode === 'create' ? 'Crear' : 'Guardar Cambios' }}
+              </button>
             </div>
           </form>
+
+          <div *ngIf="isLoading" class="text-center py-5">
+            <i class="fas fa-spinner fa-spin fa-2x"></i> Cargando...
+          </div>
+          <div *ngIf="errorLoading" class="alert alert-danger text-center">
+            Error al cargar los datos. Por favor, inténtalo de nuevo.
+          </div>
         </div>
       </div>
     </div>

@@ -1,16 +1,10 @@
-import { Maquina } from "./maquina.model";
-import { Operario } from "./operario.model";
-import { Seguro } from "./seguro.model";
-
-export class Poliza {
-    id?: number;
-    operarioId?: Operario;
-    operarios?: Operario[];
-    maquinaId?: Maquina;
-    maquinas?: Maquina[];
-    seguroId?: Seguro;
-    seguros?: Seguro[];
-    fechaInicio?: Date;
-    fechaFin?: Date;
-    estado?: string;
+export class PolizaMaquina {
+  id?: number;
+  seguro_id!: number;
+  maquina_id!: number;
+  tipo_poliza!: string;
+  fechaInicio!: string;
+  fechaFin!: string;
+  created_at?: string;
+  updated_at?: string;
 }

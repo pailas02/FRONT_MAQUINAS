@@ -1,14 +1,17 @@
+// src/app/pages/gps/gps-routing.module.ts
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ListGpsComponent } from './list/list.component';
+import { ListComponent } from './list/list.component';
 import { ManageComponent } from './manage/manage.component';
 
 const routes: Routes = [
-  { path: 'list', component: ListGpsComponent },
+  { path: 'list', component: ListComponent },
   { path: 'create', component: ManageComponent },
-  { path: 'update/:id', component: ManageComponent },
   { path: 'view/:id', component: ManageComponent },
+  { path: 'update/:id', component: ManageComponent },
+  { path: '', redirectTo: 'list', pathMatch: 'full' } // Redirige la raíz de /gps a /gps/list
 ];
+
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]

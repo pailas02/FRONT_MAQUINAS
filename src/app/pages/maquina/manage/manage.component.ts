@@ -1,118 +1,169 @@
+// src/app/pages/maquina/manage/manage.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Maquina } from 'src/app/models/maquina.model';
-import { MaquinaService } from 'src/app/services/maquina/maquina.service';
+import { MaquinaService } from '../../../services/maquina/maquina.service';
 import Swal from 'sweetalert2';
+import { of } from 'rxjs';
+import { catchError, finalize } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-manage',
+  selector: 'app-maquina-manage', // Selector único
   templateUrl: './manage.component.html',
   styleUrls: ['./manage.component.scss']
 })
 export class ManageComponent implements OnInit {
 
-  mode: number; //1->View, 2->Create, 3-> Update
-  maquina: Maquina;
+  mode: 'view' | 'create' | 'update' = 'create';
+  maquina: Maquina; // Objeto Maquina para el formulario
+  isLoading: boolean = false;
+  errorLoading: boolean = false;
 
-  constructor(private activateRoute: ActivatedRoute,
-    private someMaquina: MaquinaService,
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private maquinaService: MaquinaService,
     private router: Router
   ) {
-    this.maquina = {
-      id: 0
-    };
+    this.maquina = new Maquina(); // Inicializa el objeto
   }
 
   ngOnInit(): void {
-    const currentUrl = this.activateRoute.snapshot.url.join('/');
-    if (currentUrl.includes('view')) {
-      this.mode = 1;
-    } else if (currentUrl.includes('create')) {
-      this.mode = 2;
-    } else if (currentUrl.includes('update')) {
-      this.mode = 3;
+    const currentPath = this.activatedRoute.snapshot.url.map(segment => segment.path).join('/');
+
+    if (currentPath.includes('view')) {
+      this.mode = 'view';
+    } else if (currentPath.includes('create')) {
+      this.mode = 'create';
+    } else if (currentPath.includes('update')) {
+      this.mode = 'update';
+    } else {
+      console.warn('Modo de gestión de máquina no reconocido. Redirigiendo a la lista.');
+      this.router.navigate(['/maquina/list']);
+      return;
     }
-    if (this.activateRoute.snapshot.params.id) {
-      this.maquina.id = this.activateRoute.snapshot.params.id
-      this.getMaquina(this.maquina.id)
-    }
-  }
-  getMaquina(id: number) {
-    this.someMaquina.view(id).subscribe({
-      next: (maquina) => {
-        this.maquina = maquina;
-        console.log('maquina fetched successfully:', this.maquina);
-      },
-      error: (error) => {
-        console.error('Error fetching maquina:', error);
-      }
-    });
-  }
-  back() {
-    this.router.navigate(['maquina/list'])
-  }
-  create() {
-    console.log('Payload enviado al backend:', this.maquina); // Log para depuración
-    this.someMaquina.create(this.maquina).subscribe({
-      next: (maquina) => {
-        console.log('maquina created successfully:', maquina);
-        Swal.fire({
-          title: 'Creado!',
-          text: 'Registro creado correctamente.',
-          icon: 'success',
-        }).then(() => {
-          this.router.navigate(['/maquina/list']);
+
+    if (this.mode === 'view' || this.mode === 'update') {
+      const id = this.activatedRoute.snapshot.params.id;
+      if (id) {
+        this.isLoading = true;
+        this.maquinaService.view(id).pipe(
+          catchError(error => {
+            console.error('Error al obtener la máquina:', error);
+            Swal.fire('Error', 'No se pudo cargar la máquina. Por favor, inténtalo de nuevo.', 'error');
+            this.router.navigate(['/maquina/list']);
+            this.errorLoading = true;
+            return of(null);
+          }),
+          finalize(() => {
+            this.isLoading = false;
+          })
+        ).subscribe(data => {
+          if (data) {
+            this.maquina = data;
+            // Asegúrate de formatear la fecha si tu backend la devuelve con hora/minutos
+            if (this.maquina.fecha_asignacion) {
+                this.maquina.fecha_asignacion = this.maquina.fecha_asignacion.split('T')[0];
+            }
+          }
         });
-      },
-      error: (error) => {
-        console.error('Error creating maquina:', error);
-        if (error.status === 422) {
-          console.error('Errores de validación:', error.error.errors);
+      } else {
+        Swal.fire('Error', 'ID de máquina no proporcionado.', 'error');
+        this.router.navigate(['/maquina/list']);
+      }
+    }
+  }
+
+  back(): void {
+    this.router.navigate(['/maquina/list']);
+  }
+
+  onSubmit(): void {
+    if (this.mode === 'create') {
+      this.create();
+    } else if (this.mode === 'update') {
+      this.update();
+    }
+  }
+
+  create(): void {
+    this.isLoading = true;
+    const maquinaToCreate = { ...this.maquina };
+    delete maquinaToCreate.id; // No enviar ID al crear
+
+    this.maquinaService.create(maquinaToCreate).pipe(
+      catchError(error => {
+        console.error('Error al crear la máquina:', error);
+        Swal.fire('Error', 'No se pudo crear el registro. Verifica los datos.', 'error');
+        this.isLoading = false;
+        return of(null);
+      }),
+      finalize(() => {
+        this.isLoading = false;
+      })
+    ).subscribe(
+      (response) => {
+        if (response) {
+          Swal.fire('¡Creado!', 'Registro creado correctamente.', 'success').then(() => {
+            this.router.navigate(['/maquina/list']);
+          });
         }
       }
-    });
+    );
   }
-  update() {
-    this.someMaquina.update(this.maquina).subscribe({
-      next: (maquina) => {
-        console.log('maquina updated successfully:', maquina);
-        Swal.fire({
-          title: 'Actualizado!',
-          text: 'Registro actualizado correctamente.',
-          icon: 'success',
-        }).then(() => {
-          this.router.navigate(['/maquina/list']);
-        });
-      },
-      error: (error) => {
-        console.error('Error updating maquina:', error);
+
+  update(): void {
+    this.isLoading = true;
+    const maquinaToUpdate = { ...this.maquina };
+
+    this.maquinaService.update(maquinaToUpdate).pipe(
+      catchError(error => {
+        console.error('Error al actualizar la máquina:', error);
+        Swal.fire('Error', 'No se pudo actualizar el registro. Verifica los datos.', 'error');
+        this.isLoading = false;
+        return of(null);
+      }),
+      finalize(() => {
+        this.isLoading = false;
+      })
+    ).subscribe(
+      (response) => {
+        if (response) {
+          Swal.fire('¡Actualizado!', 'Registro actualizado correctamente.', 'success').then(() => {
+            this.router.navigate(['/maquina/list']);
+          });
+        }
       }
-    });
+    );
   }
-  delete(id: number) {
-    console.log("Delete maquina with id:", id);
+
+  delete(id: number | undefined): void {
+    if (id === undefined || isNaN(id)) {
+      Swal.fire({ icon: 'error', title: 'Error', text: 'ID de máquina no válido para eliminar.' });
+      return;
+    }
+
     Swal.fire({
-      title: 'Eliminar',
-      text: "Está maquina que quiere eliminar el registro?",
+      title: '¿Estás seguro?',
+      text: "¡Esta acción no se puede revertir!",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Si, eliminar',
+      confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.someMaquina.delete(id).
-          subscribe(data => {
-            Swal.fire(
-              'Eliminado!',
-              'Registro eliminado correctamente.',
-              'success'
-            )
-            this.ngOnInit();
-          });
+        this.maquinaService.delete(id).subscribe({
+          next: () => {
+            Swal.fire('¡Eliminado!', 'Registro eliminado correctamente.', 'success');
+            this.router.navigate(['/maquina/list']); // Redirigir a la lista después de eliminar
+          },
+          error: (error) => {
+            console.error('Error al eliminar:', error);
+            Swal.fire('Error', 'No se pudo eliminar el registro.', 'error');
+          }
+        });
       }
-    })
+    });
   }
-
 }

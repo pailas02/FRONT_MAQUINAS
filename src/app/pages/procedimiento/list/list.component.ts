@@ -27,7 +27,7 @@ export class ListProcedimientoComponent implements OnInit {
 
   // Methods for edit and delete (adjust ID type based on your model)
   edit(id: number) {
-   this.router.navigate(['procedimientos/update', id])
+   this.router.navigate(['procedimiento/update', id])
     // Implement navigation
   }
 

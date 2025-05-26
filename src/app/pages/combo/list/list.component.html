@@ -16,7 +16,7 @@
               <thead class="thead-light">
                 <tr>
                   <th scope="col">ID</th>
-                  <th scope="col">ID Servicio</th>
+                  <th scope="col">ID de Servicio</th>
                   <th scope="col">Creado el</th>
                   <th scope="col">Actualizado el</th>
                   <th scope="col">Acciones</th>
@@ -31,8 +31,8 @@
                 <tr *ngFor="let combo of combos">
                   <td>{{ combo.id }}</td>
                   <td>{{ combo.servicio_id }}</td>
-                  <td>{{ combo.created_at | date:'yyyy-MM-dd HH:mm' }}</td>
-                  <td>{{ combo.updated_at | date:'yyyy-MM-dd HH:mm' }}</td>
+                  <td>{{ combo.created_at | date:'medium' }}</td>
+                  <td>{{ combo.updated_at | date:'medium' }}</td>
                   <td>
                     <button class="btn btn-sm btn-info" (click)="view(combo.id)" title="Ver Detalles">
                       <i class="fas fa-eye"></i>

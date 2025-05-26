@@ -1,33 +1,31 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Turno } from 'src/app/models/turno.model';
 import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment';
-import { Turno } from '../../models/turno.model';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class TurnoService {
+  private baseUrl = 'http://127.0.0.1:3333/turnos';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   list(): Observable<Turno[]> {
-    return this.http.get<Turno[]>(`${environment.url_ms_negocio}/turnos`);
+    return this.http.get<Turno[]>(this.baseUrl);
   }
 
   view(id: number): Observable<Turno> {
-    return this.http.get<Turno>(`${environment.url_ms_negocio}/turnos/${id}`);
+    return this.http.get<Turno>(`${this.baseUrl}/${id}`);
   }
 
-  create(newTurno: Turno): Observable<Turno> {
-    return this.http.post<Turno>(`${environment.url_ms_negocio}/turnos`, newTurno);
+  create(turno: Partial<Turno>): Observable<any> {
+    return this.http.post(this.baseUrl, turno);
   }
 
-  update(theTurno: Turno): Observable<Turno> {
-    return this.http.put<Turno>(`${environment.url_ms_negocio}/turnos/${theTurno.id}`, theTurno);
+  update(turno: Turno): Observable<any> {
+    return this.http.put(`${this.baseUrl}/${turno.id}`, turno);
   }
 
-  delete(id: number) {
-    return this.http.delete<Turno>(`${environment.url_ms_negocio}/turnos/${id}`);
+  delete(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/${id}`);
   }
 }

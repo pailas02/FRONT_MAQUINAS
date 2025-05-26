@@ -1,109 +1,76 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Poliza } from 'src/app/models/poliza.model';
-import { PolizaService } from 'src/app/services/poliza/poliza.service';
+import { PolizaMaquina } from 'src/app/models/poliza.model';
+import { PolizaMaquinaService } from 'src/app/services/poliza/poliza.service';
 import Swal from 'sweetalert2';
+import { of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-manage',
-  templateUrl: './manage.component.html',
-  styleUrls: ['./manage.component.scss']
+  selector: 'app-manage-poliza-maquina',
+  templateUrl: './manage.component.html'
 })
-export class ManageComponent implements OnInit {
+export class ManagePolizaMaquinaComponent implements OnInit {
+  poliza: PolizaMaquina = new PolizaMaquina();
+  mode: 'create' | 'view' | 'update' = 'create';
+  isLoading = false;
 
-  mode: number; //1->View, 2->Create, 3-> Update
-  poliza: Poliza;
-
-  constructor(private activateRoute: ActivatedRoute,
-    private somePoliza: PolizaService,
-    private router: Router
-  ) {
-    this.poliza = { id: 0 }
-  }
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private service: PolizaMaquinaService
+  ) {}
 
   ngOnInit(): void {
-    const currentUrl = this.activateRoute.snapshot.url.join('/');
-    if (currentUrl.includes('view')) {
-      this.mode = 1;
-    } else if (currentUrl.includes('create')) {
-      this.mode = 2;
-    } else if (currentUrl.includes('update')) {
-      this.mode = 3;
-    }
-    if (this.activateRoute.snapshot.params.id) {
-      this.poliza.id = this.activateRoute.snapshot.params.id  
-      this.getPoliza(this.poliza.id)
+    const path = this.route.snapshot.url.map(s => s.path).join('/');
+    if (path.includes('view')) this.mode = 'view';
+    else if (path.includes('update')) this.mode = 'update';
+
+    const id = this.route.snapshot.params['id'];
+    if ((this.mode === 'view' || this.mode === 'update') && id) {
+      this.getPoliza(id);
     }
   }
-  getPoliza(id: number) {
-    this.somePoliza.view(id).subscribe({
-      next: (poliza) => {
-        this.poliza = poliza;
-        console.log('poliza fetched successfully:', this.poliza);
-      },
-      error: (error) => {
-        console.error('Error fetching poliza:', error);
-      }
+
+  getPoliza(id: number): void {
+    this.isLoading = true;
+    this.service.view(id).pipe(
+      catchError(() => {
+        Swal.fire('Error', 'No se pudo cargar la póliza.', 'error');
+        this.router.navigate(['/poliza-maquina/list']);
+        return of(null);
+      })
+    ).subscribe((data) => {
+      if (data) this.poliza = data;
+      this.isLoading = false;
     });
   }
-  back() {
-    this.router.navigate(['poliza/list'])
+
+  onSubmit(): void {
+  this.poliza.seguro_id = Number(this.poliza.seguro_id);
+  this.poliza.maquina_id = Number(this.poliza.maquina_id);
+    if (this.mode === 'create') {
+      this.service.create(this.poliza).subscribe({
+        next: () => {
+          Swal.fire('Creado', 'Registro guardado.', 'success').then(() =>
+            this.router.navigate(['/poliza-maquina/list'])
+          );
+        },
+        error: () => Swal.fire('Error', 'No se pudo crear.', 'error')
+      });
+    } else if (this.mode === 'update') {
+      this.service.update(this.poliza).subscribe({
+        next: () => {
+          Swal.fire('Actualizado', 'Registro actualizado.', 'success').then(() =>
+            this.router.navigate(['/poliza-maquina/list'])
+          );
+        },
+        error: () => Swal.fire('Error', 'No se pudo actualizar.', 'error')
+      });
+    }
   }
-  create() {
-    this.somePoliza.create(this.poliza).subscribe({
-      next: (poliza) => {
-        console.log('poliza created successfully:', poliza);
-        Swal.fire({
-          title: 'Creado!',
-          text: 'Registro creado correctamente.',
-          icon: 'success',
-        })
-        this.router.navigate(['/poliza/list']);
-      },
-      error: (error) => {
-        console.error('Error creating poliza:', error);
-      }
-    });
+
+  back(): void {
+    this.router.navigate(['/poliza-maquina/list']);
   }
-  update() {
-    this.somePoliza.update(this.poliza).subscribe({
-      next: (poliza) => {
-        console.log('poliza updated successfully:', poliza);
-        Swal.fire({
-          title: 'Actualizado!',
-          text: 'Registro actualizado correctamente.',
-          icon: 'success',
-        })
-        this.router.navigate(['/poliza/list']);
-      },
-      error: (error) => {
-        console.error('Error updating poliza:', error);
-      }
-    });
-  }
-  delete(id: number) {
-    console.log("Delete poliza with id:", id);
-    Swal.fire({
-      title: 'Eliminar',
-      text: "Está poliza que quiere eliminar el registro?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Si, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.isConfirmed) { 
-        this.somePoliza.delete(id).
-          subscribe(data => {
-            Swal.fire(
-              'Eliminado!',
-              'Registro eliminado correctamente.',
-              'success'
-            )
-            this.ngOnInit();
-          });
-      }
-    })
-}
 }

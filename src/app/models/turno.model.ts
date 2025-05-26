@@ -1,12 +1,9 @@
-import { Maquina } from "./maquina.model";
-import { Novedad } from "./novedad.model";
-
 export class Turno {
   id?: number;
-  maquinaId?: number;
-  operarioId?: number;
-  estado?: string;
-  fechaInicio?: Date;
-  fechaFin?: Date;
+  fecha!: string;
+  hora!: string;
+  operario_id!: number;
+  maquina_id!: number;
+  created_at?: string;
+  updated_at?: string;
 }
-

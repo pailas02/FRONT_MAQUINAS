@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ListTurnoComponent } from './list/list.component';
 import { CommonModule } from '@angular/common';
-import { ManageComponent } from './manage/manage.component';
+import { ManageTurnoComponent } from './manage/manage.component';
 import { TurnoRoutingModule } from './turno-routing.module';
 
 
@@ -10,7 +10,7 @@ import { TurnoRoutingModule } from './turno-routing.module';
 @NgModule({
   declarations:[
     ListTurnoComponent,
-    ManageComponent
+    ManageTurnoComponent
 
   ],
   imports:[CommonModule, FormsModule, TurnoRoutingModule]

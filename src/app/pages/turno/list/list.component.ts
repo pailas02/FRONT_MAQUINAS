@@ -1,84 +1,65 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { Turno } from 'src/app/models/turno.model';
 import { TurnoService } from 'src/app/services/turno/turno.service';
+import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-list-turno',
-  templateUrl: './list.component.html',
-  styleUrls: ['./list.component.scss']
+  templateUrl: './list.component.html'
 })
 export class ListTurnoComponent implements OnInit {
+  turnos: Turno[] = [];
+  isLoading = true;
 
-  turnos: Turno[];
-  // Si en el futuro necesitas filtrar por algún parámetro, puedes agregarlo aquí
-  // ejemplo: filtroId: number;
-
-  constructor(
-    private turnoService: TurnoService,
-    private router: Router,
-    private route: ActivatedRoute
-  ) {
-    this.turnos = [];
-    // this.filtroId = 0;
-  }
+  constructor(private turnoService: TurnoService, private router: Router) {}
 
   ngOnInit(): void {
-    // Si necesitas filtrar por algún parámetro de ruta, descomenta y ajusta:
-    // this.filtroId = Number(this.route.snapshot.params['id']);
-    // const currentUrl = this.router.url;
-    // if (currentUrl.includes('filterBy...')) {
-    //   this.filterBy...();
-    // } else {
-    this.list();
-    // }
+    this.loadTurnos();
   }
 
-  list() {
-    this.turnoService.list().subscribe((data) => {
-      this.turnos = data;
+  loadTurnos(): void {
+    this.turnoService.list().pipe(
+      finalize(() => this.isLoading = false)
+    ).subscribe({
+      next: data => this.turnos = data,
+      error: () => Swal.fire('Error', 'No se pudieron cargar los turnos.', 'error')
     });
   }
 
-  delete(id: number) {
+  edit(id: number | undefined): void {
+    if (!id) return;
+    this.router.navigate(['/turno/update', id]);
+  }
+
+  view(id: number | undefined): void {
+    if (!id) return;
+    this.router.navigate(['/turno/view', id]);
+  }
+
+  delete(id: number | undefined): void {
+    if (!id) return;
     Swal.fire({
-      title: 'Eliminar',
-      text: '¿Está seguro que quiere eliminar el registro?',
+      title: '¿Estás seguro?',
+      text: 'Esta acción no se puede deshacer.',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
+      confirmButtonText: 'Sí, eliminar'
+    }).then(result => {
       if (result.isConfirmed) {
-        this.turnoService.delete(id).subscribe(() => {
-          this.ngOnInit();
-          Swal.fire('Eliminado!', 'Registro eliminado correctamente.', 'success');
-        }, () => {
-          Swal.fire('Error', 'No se pudo eliminar el registro.', 'error');
+        this.turnoService.delete(id).subscribe({
+          next: () => {
+            Swal.fire('Eliminado', 'Turno eliminado correctamente.', 'success');
+            this.loadTurnos();
+          },
+          error: () => Swal.fire('Error', 'No se pudo eliminar el turno.', 'error')
         });
       }
     });
   }
 
-  create() {
+  create(): void {
     this.router.navigate(['/turno/create']);
   }
-
-  view(id: number) {
-    this.router.navigate(['/turno/view', id]);
-  }
-
-  update(id: number) {
-    this.router.navigate(['/turno/update', id]);
-  }
-
-  // Si necesitas filtrar por algún parámetro, puedes agregar el método aquí
-  // filterBy...() {
-  //   this.turnoService.listBy...(this.filtroId).subscribe(data => {
-  //     this.turnos = data;
-  //   });
-  // }
 }

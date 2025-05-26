@@ -1,22 +1,23 @@
-import { CommonModule } from '@angular/common';
+// src/app/pages/gps/gps.module.ts
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { RouterModule, Routes } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms'; // Necesario para [(ngModel)]
+import { HttpClientModule } from '@angular/common/http'; // Asegura que HttpClient esté disponible
+
 import { GpsRoutingModule } from './gps-routing.module';
-import { ListGpsComponent } from './list/list.component';
-import { ManageComponent } from './manage/manage.component';
-
-
+import { ListComponent as GPSListComponent } from './list/list.component';
+import { ManageComponent as GPSManageComponent } from './manage/manage.component';
 
 @NgModule({
   declarations: [
-    ListGpsComponent,
-    ManageComponent
+    GPSListComponent,
+    GPSManageComponent
   ],
   imports: [
     CommonModule,
+    GpsRoutingModule,
     FormsModule,
-    GpsRoutingModule
+    HttpClientModule
   ]
 })
-export class GpsModule {}
+export class GPSModule { }

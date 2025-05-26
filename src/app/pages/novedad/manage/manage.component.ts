@@ -3,109 +3,72 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Novedad } from 'src/app/models/novedad.model';
 import { NovedadService } from 'src/app/services/novedad/novedad.service';
 import Swal from 'sweetalert2';
+import { of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-manage',
-  templateUrl: './manage.component.html',
-  styleUrls: ['./manage.component.scss']
+  selector: 'app-manage-novedad',
+  templateUrl: './manage.component.html'
 })
-export class ManageComponent implements OnInit {
+export class ManageNovedadComponent implements OnInit {
+  novedad: Novedad = new Novedad();
+  mode: 'create' | 'view' | 'update' = 'create';
+  isLoading = false;
 
-
-  mode: number; //1->View, 2->Create, 3-> Update
-  novedad: Novedad;
-
-  constructor(private activateRoute: ActivatedRoute,
-    private someNovedad: NovedadService,
-    private router: Router
-  ) {
-    this.novedad = { id: 0 }
-  }
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private service: NovedadService
+  ) {}
 
   ngOnInit(): void {
-    const currentUrl = this.activateRoute.snapshot.url.join('/');
-    if (currentUrl.includes('view')) {
-      this.mode = 1;
-    } else if (currentUrl.includes('create')) {
-      this.mode = 2;
-    } else if (currentUrl.includes('update')) {
-      this.mode = 3;
+    const path = this.route.snapshot.url.map(s => s.path).join('/');
+    if (path.includes('view')) this.mode = 'view';
+    else if (path.includes('update')) this.mode = 'update';
+
+    const id = this.route.snapshot.params['id'];
+    if ((this.mode === 'view' || this.mode === 'update') && id) {
+      this.getNovedad(id);
     }
-    if (this.activateRoute.snapshot.params.id) {
-      this.novedad.id = this.activateRoute.snapshot.params.id
-      this.getNovedad(this.novedad.id)
-    }
-  }
-  getNovedad(id: number) {
-    this.someNovedad.view(id).subscribe({
-      next: (novedad) => {
-        this.novedad = novedad;
-        console.log('novedad fetched successfully:', this.novedad);
-      },
-      error: (error) => {
-        console.error('Error fetching novedad:', error);
-      }
-    });
-  }
-  back() {
-    this.router.navigate(['novedades/list'])
-  }
-  create() {
-    this.someNovedad.create(this.novedad).subscribe({
-      next: (novedad) => {
-        console.log('novedad created successfully:', novedad);
-        Swal.fire({
-          title: 'Creado!',
-          text: 'Registro creado correctamente.',
-          icon: 'success',
-        })
-        this.router.navigate(['/novedades/list']);
-      },
-      error: (error) => {
-        console.error('Error creating novedad:', error);
-      }
-    });
-  }
-  update() {
-    this.someNovedad.update(this.novedad).subscribe({
-      next: (novedad) => {
-        console.log('novedad updated successfully:', novedad);
-        Swal.fire({
-          title: 'Actualizado!',
-          text: 'Registro actualizado correctamente.',
-          icon: 'success',
-        })
-        this.router.navigate(['/novedades/list']);
-      },
-      error: (error) => {
-        console.error('Error updating novedad:', error);
-      }
-    });
-  }
-  delete(id: number) {
-    console.log("Delete novedad with id:", id);
-    Swal.fire({
-      title: 'Eliminar',
-      text: "Está novedad que quiere eliminar el registro?",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Si, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.someNovedad.delete(id).
-          subscribe(data => {
-            Swal.fire(
-              'Eliminado!',
-              'Registro eliminado correctamente.',
-              'success'
-            )
-            this.ngOnInit();
-          });
-      }
-    })
   }
 
+  getNovedad(id: number): void {
+    this.isLoading = true;
+    this.service.view(id).pipe(
+      catchError(() => {
+        Swal.fire('Error', 'No se pudo cargar la novedad.', 'error');
+        this.router.navigate(['/novedad/list']);
+        return of(null);
+      })
+    ).subscribe((data) => {
+      if (data) this.novedad = data;
+      this.isLoading = false;
+    });
+  }
+
+  onSubmit(): void {
+    if (this.mode === 'create') {
+      this.service.create(this.novedad).subscribe({
+        next: () => {
+          Swal.fire('Creado', 'Registro guardado.', 'success').then(() =>
+            this.router.navigate(['/novedad/list'])
+          );
+        },
+        error: () => Swal.fire('Error', 'No se pudo crear.', 'error')
+      });
+    } else if (this.mode === 'update') {
+      this.service.update(this.novedad).subscribe({
+        next: () => {
+          Swal.fire('Actualizado', 'Registro actualizado.', 'success').then(() =>
+            this.router.navigate(['/novedad/list'])
+          );
+        },
+        error: () => Swal.fire('Error', 'No se pudo actualizar.', 'error')
+      });
+    }
+  }
+
+  back(): void {
+    this.router.navigate(['/novedad/list']);
+  }
 }

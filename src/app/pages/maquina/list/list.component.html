@@ -1,12 +1,13 @@
-<div class="header bg-gradient-danger pb-8 pt-5 pt-md-8">
-  </div>
+<div class="header bg-gradient-danger pb-8 pt-5 pt-md-8"></div>
+
 <div class="container-fluid mt--7">
   <div class="row">
     <div class="col">
       <div class="card shadow">
-        <div class="card-header bg-transparent">
-          <h3 class="mb-0">Listado de Maquinas</h3> <button class="btn btn-success float-right" [routerLink]="['/maquina/create']">
-            <i class="fas fa-plus"></i> Añadir Máquina
+        <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+          <h3 class="mb-0">Listado de Máquinas</h3>
+          <button class="btn btn-success" (click)="createMaquina()">
+            <i class="fas fa-plus"></i> Nueva Máquina
           </button>
         </div>
         <div class="card-body">
@@ -22,36 +23,45 @@
                   <th scope="col">Ubicación</th>
                   <th scope="col">Disponibilidad</th>
                   <th scope="col">Fecha Asignación</th>
-                  <th scope="col">Fecha Retiro</th>
+                  <th scope="col">Creado el</th>
+                  <th scope="col">Actualizado el</th>
                   <th scope="col">Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let machine of maquinas">
-                  <td>{{ machine.id }}</td>
-                  <td>{{ machine.especialidad }}</td>
-                  <td>{{ machine.marca }}</td>
-                  <td>{{ machine.modelo }}</td>
-                  <td>{{ machine.estado }}</td>
-                  <td>
-                    {{ machine.ubicacion }}
-                    </td>
-                  <td>
-                    <span *ngIf="machine.disponibilidad === 1" class="badge badge-success">Disponible</span>
-                    <span *ngIf="machine.disponibilidad === 0" class="badge badge-warning">No Disponible</span>
-                    <span *ngIf="machine.disponibilidad === undefined || machine.disponibilidad === null" class="badge badge-secondary">N/A</span>
+                <tr *ngIf="isLoading && maquinas.length === 0">
+                  <td colspan="11" class="text-center"> <i class="fas fa-spinner fa-spin"></i> Cargando máquinas...
                   </td>
-                  <td>{{ machine.fecha_asignacion | date:'yyyy-MM-dd' }}</td> <td>{{ machine.fecha_retiro | date:'yyyy-MM-dd' || 'N/A' }}</td> <td>
-                    <button class="btn btn-sm btn-primary" (click)="edit(machine.id)">
-                      <i class="fas fa-edit"></i> Editar
+                </tr>
+                <tr *ngFor="let maquina of maquinas">
+                  <td>{{ maquina.id }}</td>
+                  <td>{{ maquina.especialidad }}</td>
+                  <td>{{ maquina.marca }}</td>
+                  <td>{{ maquina.modelo }}</td>
+                  <td>{{ maquina.estado }}</td>
+                  <td>{{ maquina.ubicacion }}</td>
+                  <td>
+                    <span class="badge" [ngClass]="{'badge-success': maquina.disponibilidad, 'badge-danger': !maquina.disponibilidad}">
+                      {{ maquina.disponibilidad ? 'Disponible' : 'No Disponible' }}
+                    </span>
+                  </td>
+                  <td>{{ maquina.fecha_asignacion }}</td>
+                  <td>{{ maquina.created_at | date:'medium' }}</td>
+                  <td>{{ maquina.updated_at | date:'medium' }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-info" (click)="view(maquina.id)" title="Ver Detalles">
+                      <i class="fas fa-eye"></i>
                     </button>
-                    <button class="btn btn-sm btn-danger" (click)="delete(machine.id)">
-                      <i class="fas fa-trash-alt"></i> Eliminar
+                    <button class="btn btn-sm btn-primary ml-1" (click)="edit(maquina.id)" title="Editar">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger ml-1" (click)="delete(maquina.id)" title="Eliminar">
+                      <i class="fas fa-trash-alt"></i>
                     </button>
                   </td>
                 </tr>
-                <tr *ngIf="maquinas.length === 0">
-                  <td colspan="10" class="text-center">No hay maquinarias disponibles.</td>
+                <tr *ngIf="!isLoading && maquinas.length === 0">
+                  <td colspan="11" class="text-center">No hay máquinas disponibles.</td>
                 </tr>
               </tbody>
             </table>
