@@ -12,7 +12,9 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppRoutingModule } from './app.routing';
 import { ComponentsModule } from './components/components.module';
-
+// import { ListComponent } from './pages/theaters/list/list.component'; // Ya declarado en TheatersModule
+// import { ManageComponent } from './pages/theaters/manage/manage.component'; // Ya declarado en TheatersModule
+import { ManageComponent } from './pages/obra-municipal/manage/manage.component'; // Asegúrate de que TheatersModule esté importado
 
 @NgModule({
   imports: [
@@ -22,12 +24,14 @@ import { ComponentsModule } from './components/components.module';
     ComponentsModule,
     NgbModule,
     RouterModule,
-    AppRoutingModule
+    AppRoutingModule,
   ],
   declarations: [
     AppComponent,
     AdminLayoutComponent,
-    AuthLayoutComponent
+    AuthLayoutComponent,
+    // ListComponent, // Eliminar de aquí
+    // ManageComponent // Eliminar de aquí
   ],
   providers: [],
   bootstrap: [AppComponent]

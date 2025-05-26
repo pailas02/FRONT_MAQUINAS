@@ -1,0 +1,79 @@
+<div class="header bg-gradient-danger pb-8 pt-5 pt-md-8"></div>
+
+<div class="container-fluid mt--7">
+  <div class="row">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-header bg-transparent">
+          <h3 class="mb-0" *ngIf="mode === 'view'">Detalle de la Obra</h3>
+          <h3 class="mb-0" *ngIf="mode === 'create'">Crear Nueva Obra</h3>
+          <h3 class="mb-0" *ngIf="mode === 'update'">Actualizar Obra</h3>
+        </div>
+        <div class="card-body container">
+          <div *ngIf="isLoading" class="text-center my-4">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p class="mt-2">Cargando datos...</p>
+          </div>
+
+          <div *ngIf="errorLoading" class="alert alert-danger text-center" role="alert">
+            Error al cargar la obra. Por favor, intente de nuevo.
+          </div>
+
+          <form (ngSubmit)="onSubmit()" #obraForm="ngForm" *ngIf="!isLoading && !errorLoading">
+            <div class="row align-items-center mb-3">
+              <div class="col-md-3">ID</div>
+              <div class="col-md-9">
+                <input type="text" class="form-control" [(ngModel)]="obra.id" name="id" readonly *ngIf="mode !== 'create'">
+                <span *ngIf="mode === 'create'" class="form-control-plaintext">Se asignará automáticamente</span>
+              </div>
+            </div>
+
+            <div class="row align-items-center mb-3">
+              <div class="col-md-3">Nombre</div>
+              <div class="col-md-9">
+                <input type="text" class="form-control" [(ngModel)]="obra.nombre" name="nombre" [disabled]="mode === 'view'" required>
+              </div>
+            </div>
+
+            <div class="row align-items-center mb-3">
+              <div class="col-md-3">Combo Asociado</div>
+              <div class="col-md-9">
+                <select class="form-control" [(ngModel)]="obra.combo_id" name="combo_id" [disabled]="mode === 'view'" required>
+                  <option value="" disabled>Selecciona un combo</option>
+                  <option *ngFor="let combo of combosDisponibles" [value]="combo.id">
+                    {{ combo.id }} - Servicio ID: {{ combo.servicio_id }}
+                    </option>
+                </select>
+                <div *ngIf="combosDisponibles.length === 0 && !isLoading" class="text-muted mt-2">
+                  No hay combos disponibles. Asegúrate de crear combos primero.
+                </div>
+              </div>
+            </div>
+
+            <div class="row align-items-center mb-3" *ngIf="mode === 'view' || mode === 'update'">
+              <div class="col-md-3">Creado el</div>
+              <div class="col-md-9">
+                <input type="text" class="form-control" [ngModel]="obra.created_at | date:'medium'" name="created_at" readonly>
+              </div>
+            </div>
+            <div class="row align-items-center mb-3" *ngIf="mode === 'view' || mode === 'update'">
+              <div class="col-md-3">Actualizado el</div>
+              <div class="col-md-9">
+                <input type="text" class="form-control" [ngModel]="obra.updated_at | date:'medium'" name="updated_at" readonly>
+              </div>
+            </div>
+
+            <div class="row mt-4">
+              <div class="col-md-12 text-right">
+                <button type="button" class="btn btn-secondary mr-2" (click)="back()">Volver</button>
+                <button type="submit" class="btn btn-primary" *ngIf="mode === 'create'">Crear</button>
+                <button type="submit" class="btn btn-primary" *ngIf="mode === 'update'">Actualizar</button>
+                <button type="button" class="btn btn-danger ml-2" *ngIf="mode === 'update' || mode === 'view'" (click)="delete(obra.id)">Eliminar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

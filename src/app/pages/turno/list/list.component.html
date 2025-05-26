@@ -1,0 +1,48 @@
+<div class="header bg-gradient-danger pb-8 pt-5 pt-md-8"></div>
+
+<div class="container-fluid mt--7">
+  <div class="row">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+          <h3 class="mb-0">Turnos</h3>
+          <button class="btn btn-sm btn-success" (click)="create()">Nuevo</button>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table align-items-center table-flush">
+              <thead class="thead-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Máquina</th>
+                  <th>Operario</th>
+                  <th>Estado</th>
+                  <th>Inicio</th>
+                  <th>Fin</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let turno of turnos">
+                  <td>{{ turno.id }}</td>
+                  <td>{{ turno.maquinaId }}</td>
+                  <td>{{ turno.operarioId }}</td>
+                  <td>{{ turno.estado }}</td>
+                  <td>{{ turno.fechaInicio | date: 'short' }}</td>
+                  <td>{{ turno.fechaFin | date: 'short' }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-primary me-2" (click)="edit(turno.id)">Editar</button>
+                    <button class="btn btn-sm btn-danger" (click)="delete(turno.id)">Eliminar</button>
+                  </td>
+                </tr>
+                <tr *ngIf="turnos.length === 0">
+                  <td colspan="7" class="text-center">No hay turnos registrados.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

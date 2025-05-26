@@ -1,0 +1,123 @@
+<div class="header bg-gradient-danger pb-8 pt-5 pt-md-8"></div>
+<div class="container-fluid mt--7">
+  <div class="row">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-header bg-transparent">
+          <h3 class="mb-0" *ngIf="mode === 'view'">Detalle del Servicio</h3>
+          <h3 class="mb-0" *ngIf="mode === 'create'">Crear Nuevo Servicio</h3>
+          <h3 class="mb-0" *ngIf="mode === 'update'">Actualizar Servicio</h3>
+        </div>
+        <div class="card-body container">
+          <div *ngIf="isLoading" class="text-center my-4">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p class="mt-2">Cargando datos...</p>
+          </div>
+
+          <div *ngIf="errorLoading" class="alert alert-danger text-center" role="alert">
+            Error al cargar el servicio. Por favor, intente de nuevo.
+          </div>
+
+          <form (ngSubmit)="onSubmit()" #servicioForm="ngForm" *ngIf="!isLoading && !errorLoading">
+            <div class="row align-items-center mb-3">
+              <div class="col-md-3">ID</div>
+              <div class="col-md-9">
+                <input type="text" class="form-control" [(ngModel)]="servicio.id" name="id" readonly *ngIf="mode !== 'create'">
+                <span *ngIf="mode === 'create'" class="form-control-plaintext">Se asignará automáticamente</span>
+              </div>
+            </div>
+
+            <div class="row align-items-center mb-3">
+              <div class="col-md-3">Costo</div>
+              <div class="col-md-9">
+                <input type="number" class="form-control" [(ngModel)]="servicio.costo" name="costo" [disabled]="mode === 'view'" required>
+              </div>
+            </div>
+
+            <div class="row align-items-center mb-3">
+              <div class="col-md-3">Fecha Inicio</div>
+              <div class="col-md-9">
+                <input type="date" class="form-control" [(ngModel)]="servicio.f_inicio" name="f_inicio" [disabled]="mode === 'view'" required>
+              </div>
+            </div>
+
+            <div class="row align-items-center mb-3">
+              <div class="col-md-3">Fecha Fin</div>
+              <div class="col-md-9">
+                <input type="date" class="form-control" [(ngModel)]="servicio.f_fin" name="f_fin" [disabled]="mode === 'view'">
+              </div>
+            </div>
+
+            <div class="row align-items-center mb-3">
+              <div class="col-md-3">Prioridad</div>
+              <div class="col-md-9">
+                <select class="form-control" [(ngModel)]="servicio.prioridad" name="prioridad" [disabled]="mode === 'view'" required>
+                  <option value="" disabled>Selecciona una prioridad</option>
+                  <option value="Alta">Alta</option>
+                  <option value="Media">Media</option>
+                  <option value="Baja">Baja</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row align-items-center mb-3">
+              <div class="col-md-3">Tipo de Servicio</div>
+              <div class="col-md-9">
+                <input type="text" class="form-control" [(ngModel)]="servicio.tipo" name="tipo" [disabled]="mode === 'view'" required>
+              </div>
+            </div>
+
+            <div class="row align-items-center mb-3">
+              <div class="col-md-3">Estado</div>
+              <div class="col-md-9">
+                <select class="form-control" [(ngModel)]="servicio.estado" name="estado" [disabled]="mode === 'view'" required>
+                  <option value="" disabled>Selecciona un estado</option>
+                  <option value="Activo">Activo</option>
+                  <option value="Pendiente">Pendiente</option>
+                  <option value="Finalizado">Finalizado</option>
+                  <option value="Cancelado">Cancelado</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row align-items-center mb-3">
+              <div class="col-md-3">Ubicación</div>
+              <div class="col-md-9">
+                <input type="text" class="form-control" [(ngModel)]="servicio.ubicacion" name="ubicacion" [disabled]="mode === 'view'" required>
+              </div>
+            </div>
+
+            <div class="row align-items-center mb-3">
+              <div class="col-md-3">Resumen</div>
+              <div class="col-md-9">
+                <textarea class="form-control" [(ngModel)]="servicio.resumen" name="resumen" [disabled]="mode === 'view'" rows="3"></textarea>
+              </div>
+            </div>
+
+            <div class="row align-items-center mb-3" *ngIf="mode === 'view' || mode === 'update'">
+              <div class="col-md-3">Creado el</div>
+              <div class="col-md-9">
+                <input type="text" class="form-control" [ngModel]="servicio.created_at | date:'medium'" name="created_at" readonly>
+              </div>
+            </div>
+            <div class="row align-items-center mb-3" *ngIf="mode === 'view' || mode === 'update'">
+              <div class="col-md-3">Actualizado el</div>
+              <div class="col-md-9">
+                <input type="text" class="form-control" [ngModel]="servicio.updated_at | date:'medium'" name="updated_at" readonly>
+              </div>
+            </div>
+
+            <div class="row mt-4">
+              <div class="col-md-12 text-right">
+                <button type="button" class="btn btn-secondary mr-2" (click)="back()">Volver</button>
+                <button type="submit" class="btn btn-primary" *ngIf="mode === 'create'">Crear</button>
+                <button type="submit" class="btn btn-primary" *ngIf="mode === 'update'">Actualizar</button>
+                <button type="button" class="btn btn-danger ml-2" *ngIf="mode === 'update' || mode === 'view'" (click)="delete(servicio.id)">Eliminar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

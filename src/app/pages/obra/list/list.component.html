@@ -1,0 +1,60 @@
+<div class="header bg-gradient-danger pb-8 pt-5 pt-md-8"></div>
+
+<div class="container-fluid mt--7">
+  <div class="row">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+          <h3 class="mb-0">Listado de Obras</h3>
+          <button class="btn btn-success" (click)="createObra()">
+            <i class="fas fa-plus"></i> Nueva Obra
+          </button>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table align-items-center table-flush">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col">ID</th>
+                  <th scope="col">Nombre</th>
+                  <th scope="col">ID Combo</th>
+                  <th scope="col">Creado el</th>
+                  <th scope="col">Actualizado el</th>
+                  <th scope="col">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngIf="isLoading && obras.length === 0">
+                  <td colspan="6" class="text-center">
+                    <i class="fas fa-spinner fa-spin"></i> Cargando obras...
+                  </td>
+                </tr>
+                <tr *ngFor="let obra of obras">
+                  <td>{{ obra.id }}</td>
+                  <td>{{ obra.nombre }}</td>
+                  <td>{{ obra.combo_id }}</td>
+                  <td>{{ obra.created_at | date:'yyyy-MM-dd HH:mm' }}</td>
+                  <td>{{ obra.updated_at | date:'yyyy-MM-dd HH:mm' }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-info" (click)="view(obra.id)" title="Ver Detalles">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-primary ml-1" (click)="edit(obra.id)" title="Editar">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger ml-1" (click)="delete(obra.id)" title="Eliminar">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="!isLoading && obras.length === 0">
+                  <td colspan="6" class="text-center">No hay obras disponibles.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

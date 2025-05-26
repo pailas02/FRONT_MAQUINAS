@@ -1,0 +1,45 @@
+<div class="header bg-gradient-danger pb-8 pt-5 pt-md-8"></div>
+
+<div class="container-fluid mt--7">
+  <div class="row">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+          <h3 class="mb-0">Listado de Municipios</h3>
+          <input
+            type="text"
+            class="form-control w-50"
+            placeholder="Buscar municipio..."
+            [(ngModel)]="searchTerm"
+          />
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table align-items-center table-flush">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col">Nombre del Municipio</th>
+                  <th scope="col">Departamento</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngIf="isLoading && municipios.length === 0">
+                  <td colspan="3" class="text-center">
+                    <i class="fas fa-spinner fa-spin"></i> Cargando municipios...
+                  </td>
+                </tr>
+                <tr *ngFor="let municipio of filteredMunicipios()">
+                  <td>{{ municipio.nombre }}</td>
+                  <td>{{ getDepartamentoNombre(municipio.departamento_id) }}</td>
+                </tr>
+                <tr *ngIf="!isLoading && filteredMunicipios().length === 0">
+                  <td colspan="3" class="text-center">No hay municipios que coincidan con tu búsqueda.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

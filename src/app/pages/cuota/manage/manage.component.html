@@ -1,0 +1,56 @@
+<div class="manage-container">
+  <h2 *ngIf="mode === 1">Detalle de la Cuota</h2>
+  <h2 *ngIf="mode === 2">Crear Cuota</h2>
+  <h2 *ngIf="mode === 3">Editar Cuota</h2>
+
+  <form *ngIf="cuota" class="form" (ngSubmit)="mode === 2 ? create() : update()" autocomplete="off">
+    <div class="form-group">
+      <label for="nombre">Nombre</label>
+      <input
+        id="nombre"
+        type="text"
+        class="form-control"
+        [(ngModel)]="cuota.nombre"
+        name="nombre"
+        [readonly]="mode === 1"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="monto">Monto</label>
+      <input
+        id="monto"
+        type="number"
+        class="form-control"
+        [(ngModel)]="cuota.monto"
+        name="monto"
+        [readonly]="mode === 1"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="estado">Estado</label>
+      <input
+        id="estado"
+        type="text"
+        class="form-control"
+        [(ngModel)]="cuota.estado"
+        name="estado"
+        [readonly]="mode === 1"
+      />
+    </div>
+
+    <!-- Puedes agregar más campos según el modelo de cuota -->
+
+    <div class="form-actions mt-4">
+      <button *ngIf="mode === 2" type="submit" class="btn btn-success">Crear</button>
+      <button *ngIf="mode === 3" type="submit" class="btn btn-primary">Actualizar</button>
+      <button *ngIf="mode === 1" type="button" class="btn btn-warning" (click)="back()">Volver</button>
+      <button *ngIf="mode === 3" type="button" class="btn btn-danger ms-2" (click)="delete(cuota.id)">Eliminar</button>
+    </div>
+  </form>
+
+  <button class="btn btn-secondary mt-3" (click)="back()">Regresar</button>
+</div>

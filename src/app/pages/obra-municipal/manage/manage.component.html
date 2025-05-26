@@ -1,0 +1,63 @@
+<div class="header bg-gradient-danger pb-8 pt-5 pt-md-8"></div>
+
+<div class="container-fluid mt--7">
+  <div class="row">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-header bg-transparent">
+          <h3 class="mb-0" *ngIf="mode === 1">Detalle del vínculo</h3>
+          <h3 class="mb-0" *ngIf="mode === 2">Crear vínculo</h3>
+          <h3 class="mb-0" *ngIf="mode === 3">Actualizar vínculo</h3>
+        </div>
+
+        <div class="card-body container">
+
+          <!-- ID -->
+          <div class="row mb-3">
+            <div class="col-3">ID</div>
+            <div class="col-9">
+              <input type="number" class="form-control" [(ngModel)]="obramunicipio.id" disabled />
+            </div>
+          </div>
+
+          <!-- Obra -->
+          <div class="row mb-3">
+            <div class="col-3">Obra</div>
+            <div class="col-9">
+              <select class="form-control" [(ngModel)]="obramunicipio.obra_id" [disabled]="mode === 1">
+                <option [ngValue]="null" disabled>Seleccione una obra</option>
+                <option *ngFor="let obra of obras" [value]="obra.id">
+                  {{ obra.nombre }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Municipio -->
+          <div class="row mb-4">
+            <div class="col-3">Municipio</div>
+            <div class="col-9">
+              <select class="form-control" [(ngModel)]="obramunicipio.municipio_id" [disabled]="mode === 1">
+                <option [ngValue]="null" disabled>Seleccione un municipio</option>
+                <option *ngFor="let municipio of municipios" [value]="municipio.id">
+                  {{ municipio.nombre }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Botones -->
+          <div class="row">
+            <div class="col-3"></div>
+            <div class="col-9">
+              <button *ngIf="mode === 1" class="btn btn-secondary btn-block" (click)="back()">Volver</button>
+              <button *ngIf="mode === 2" class="btn btn-success btn-block" (click)="create()" [disabled]="isSubmitting">Crear</button>
+              <button *ngIf="mode === 3" class="btn btn-primary btn-block" (click)="update()" [disabled]="isSubmitting">Actualizar</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
