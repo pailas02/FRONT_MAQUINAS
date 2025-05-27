@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ListTurnoComponent } from '../turno/list/list.component';
-import { ManageComponent } from './manage/manage.component';
+import { ListUsuarioComponent } from '../usuario/list/list.component';
+import { ManageUsuarioComponent } from './manage/manage.component';
 
 const routes: Routes = [
-    { path: 'list', component: ListTurnoComponent },
-    { path: 'create', component: ManageComponent },
-    { path: 'update/:id', component: ManageComponent },
-    { path: 'view/:id', component: ManageComponent },
+    { path: 'list', component: ListUsuarioComponent },
+    { path: 'create', component: ManageUsuarioComponent },
+    { path: 'update/:id', component: ManageUsuarioComponent },
+    { path: 'view/:id', component: ManageUsuarioComponent },
 ];
 
 @NgModule({

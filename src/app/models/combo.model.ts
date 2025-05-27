@@ -4,8 +4,4 @@ export class Combo {
     public created_at?: string;
     public updated_at?: string;
 
-
-    constructor(data?: Partial<Combo>) {
-        Object.assign(this, data);
-    }
 }

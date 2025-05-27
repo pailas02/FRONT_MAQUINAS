@@ -46,6 +46,7 @@ export class ManageComponent implements OnInit {
     }
 
     this.loadInitialData();
+    
   }
 
   loadInitialData(): void {
@@ -53,14 +54,7 @@ export class ManageComponent implements OnInit {
     this.errorLoading = false;
 
     // Cargar la lista de servicios siempre, ya que la necesitamos para el select
-    const servicios$ = this.servicioService.list().pipe(
-      catchError(error => {
-        console.error('Error al cargar servicios:', error);
-        Swal.fire('Error', 'No se pudieron cargar los servicios para la selección.', 'error');
-        this.errorLoading = true;
-        return of([]); // Retorna un array vacío para que el forkJoin no falle
-      })
-    );
+    const servicios = this.servicioService.list()
 
     // Si estamos en modo ver o actualizar, también cargamos el combo
     const combo$ = (this.mode === 'view' || this.mode === 'update') ?
@@ -75,7 +69,7 @@ export class ManageComponent implements OnInit {
       ) : of(null); // En modo crear, no hay combo que cargar
 
     forkJoin({
-      servicios: servicios$,
+      servicios: servicios,
       combo: combo$
     }).pipe(
       finalize(() => {
@@ -87,7 +81,10 @@ export class ManageComponent implements OnInit {
         this.combo = data.combo;
       }
       console.log('Datos iniciales cargados (Servicios y Combo si aplica):', data);
+      console.log(this.servicios)
     });
+
+    
   }
 
   // Método para obtener el nombre del servicio para el select (si lo necesitas mostrar en el combo de selección)

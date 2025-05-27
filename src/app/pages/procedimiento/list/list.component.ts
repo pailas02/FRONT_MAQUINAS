@@ -56,4 +56,7 @@ export class ListProcedimientoComponent implements OnInit {
           }
         })
   }
+  createprocedimiento(): void {
+    this.router.navigate(['/procedimiento/create']);
+  }
 }

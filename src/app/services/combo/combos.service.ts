@@ -14,9 +14,7 @@ export class ComboService {
   constructor(private http: HttpClient) { }
 
   list(): Observable<Combo[]> {
-    return this.http.get<{ data: Combo[] }>(this.apiUrl).pipe(
-      map(response => response.data) // Asumo que tu API devuelve { data: [...] }
-    );
+    return this.http.get<Combo[]>(this.apiUrl);
   }
 
   view(id: number): Observable<Combo> {

@@ -30,7 +30,7 @@ export class ListObraMunicipioComponent implements OnInit {
   }
 
   edit(id: number) {
-    this.router.navigate(['obra-municipio/update', id]);
+    this.router.navigate(['obramunicipal/update', id]);
   }
 
   delete(id: number) {
@@ -61,5 +61,8 @@ export class ListObraMunicipioComponent implements OnInit {
       o.obra_id.toString().includes(term) ||
       o.municipio_id.toLowerCase().includes(term)
     );
+  }
+  createobramunicipal(): void {
+    this.router.navigate(['/obramunicipal/create']);
   }
 }

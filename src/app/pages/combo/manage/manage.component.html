@@ -14,7 +14,7 @@
               <select class="form-control" id="servicio_id" name="servicio_id" [(ngModel)]="combo.servicio_id" [disabled]="mode === 'view'" required>
                 <option [ngValue]="undefined" disabled selected>Seleccione un servicio</option>
                 <option *ngFor="let servicio of servicios" [ngValue]="servicio.id">
-                  {{ servicio.nombre }}
+                  {{ servicio.id}}
                 </option>
               </select>
             </div>
