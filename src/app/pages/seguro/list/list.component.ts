@@ -61,4 +61,8 @@ export class ListSeguroComponent implements OnInit {
     //   this.ngOnInit(); // Reload the list
     // });
   }
+  createSeguro() {
+    this.router.navigate(['seguro/create']);
+    // Implement navigation to create Seguro, e.g: this.router.navigate(['/admin/Seguro/create']);
+  }
 }

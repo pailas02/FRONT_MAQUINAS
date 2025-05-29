@@ -1,7 +1,7 @@
 // specialities/list/list.component.ts
 import { Component, OnInit } from '@angular/core';
 import { Especialidad } from 'src/app/models/especialidad.model';
-import { EspecialidadMaquinaService } from 'src/app/services/especialidadMaquinaria/especialidad-maquina.service';
+import { EspecialidadService } from 'src/app/services/especialidad/especialidad.service';
 import { Router } from '@angular/router'; // Import Router for navigation
 import Swal from 'sweetalert2'; // Import SweetAlert2
 
@@ -15,7 +15,7 @@ export class ListEspecialidadComponent implements OnInit {
   especialidades: Especialidad[] = []; // Array to store specialities
 
   // Inject the service and Router
-  constructor(private especialidadesService: EspecialidadMaquinaService, private router: Router) { }
+  constructor(private especialidadesService: EspecialidadService, private router: Router) { }
 
   ngOnInit(): void {
     // Call the service to get the list
@@ -116,4 +116,31 @@ export class ListEspecialidadComponent implements OnInit {
       }
     );
   }
+  createEspecialidad() {
+    this.router.navigate(['/especialidad/create']).then(
+      success => {
+        if (success) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Redirigido',
+            text: 'Navegación exitosa al formulario de creación.'
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo navegar al formulario de creación.'
+          });
+        }
+      },
+      error => {
+        console.error('Error al navegar:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ocurrió un error al intentar navegar al formulario de creación.'
+        });
+      }
+    );
+}
 }

@@ -5,56 +5,156 @@
     <div class="col">
       <div class="card shadow">
         <div class="card-header bg-transparent">
-          <h3 class="mb-0">{{ mode === 'create' ? 'Crear Máquina' : (mode === 'update' ? 'Editar Máquina' : 'Ver Máquina') }}</h3>
+          <h3 class="mb-0" *ngIf="mode === 1">Detalle de Máquina</h3>
+          <h3 class="mb-0" *ngIf="mode === 2">Crear Máquina</h3>
+          <h3 class="mb-0" *ngIf="mode === 3">Actualizar Máquina</h3>
         </div>
-        <div class="card-body">
-          <form (ngSubmit)="onSubmit()" *ngIf="!isLoading && !errorLoading">
-            <div class="form-group">
-              <label for="especialidad">Especialidad</label>
-              <input type="text" class="form-control" id="especialidad" name="especialidad" [(ngModel)]="maquina.especialidad" [disabled]="mode === 'view'" required>
-            </div>
-            <div class="form-group">
-              <label for="marca">Marca</label>
-              <input type="text" class="form-control" id="marca" name="marca" [(ngModel)]="maquina.marca" [disabled]="mode === 'view'" required>
-            </div>
-            <div class="form-group">
-              <label for="modelo">Modelo</label>
-              <input type="text" class="form-control" id="modelo" name="modelo" [(ngModel)]="maquina.modelo" [disabled]="mode === 'view'" required>
-            </div>
-            <div class="form-group">
-              <label for="estado">Estado</label>
-              <input type="text" class="form-control" id="estado" name="estado" [(ngModel)]="maquina.estado" [disabled]="mode === 'view'" required>
-            </div>
-            <div class="form-group">
-              <label for="ubicacion">Ubicación</label>
-              <input type="text" class="form-control" id="ubicacion" name="ubicacion" [(ngModel)]="maquina.ubicacion" [disabled]="mode === 'view'" required>
-            </div>
-            <div class="form-group">
-              <label for="disponibilidad">Disponibilidad</label>
-              <select class="form-control" id="disponibilidad" name="disponibilidad" [(ngModel)]="maquina.disponibilidad" [disabled]="mode === 'view'" required>
-                <option [ngValue]="true">Disponible</option>
-                <option [ngValue]="false">No Disponible</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="fecha_asignacion">Fecha de Asignación</label>
-              <input type="date" class="form-control" id="fecha_asignacion" name="fecha_asignacion" [(ngModel)]="maquina.fecha_asignacion" [disabled]="mode === 'view'">
+
+        <div class="card-body container">
+          <form [formGroup]="maquinaForm">
+
+            <!-- ID solo lectura -->
+            <div class="row align-items-center mb-3" *ngIf="mode === 1 || mode === 3">
+              <div class="col-md-3">ID</div>
+              <div class="col-md-9">
+                <input type="text" class="form-control" [value]="maquina.id" disabled>
+              </div>
             </div>
 
-            <div class="form-group text-right">
-              <button type="button" class="btn btn-secondary" (click)="back()">Volver</button>
-              <button type="submit" class="btn btn-primary ml-2" *ngIf="mode !== 'view'">
-                {{ mode === 'create' ? 'Crear' : 'Guardar Cambios' }}
-              </button>
+            <!-- Especialidad -->
+            <div class="row align-items-center mb-3">
+              <div class="col-md-3">Especialidad</div>
+              <div class="col-md-9">
+                <input type="text" class="form-control" formControlName="especialidad"
+                  [ngClass]="{'is-invalid': maquinaForm.get('especialidad')?.invalid && maquinaForm.get('especialidad')?.touched}"
+                  [disabled]="mode === 1">
+                <div class="invalid-feedback" *ngIf="maquinaForm.get('especialidad')?.touched">
+                  <div *ngIf="maquinaForm.get('especialidad')?.errors?.['required']">La especialidad es requerida</div>
+                  <div *ngIf="maquinaForm.get('especialidad')?.errors?.['minlength']">Mínimo 3 caracteres</div>
+                  <div *ngIf="maquinaForm.get('especialidad')?.errors?.['maxlength']">Máximo 50 caracteres</div>
+                </div>
+              </div>
             </div>
+
+            <!-- Marca -->
+            <div class="row align-items-center mb-3">
+              <div class="col-md-3">Marca</div>
+              <div class="col-md-9">
+                <input type="text" class="form-control" formControlName="marca"
+                  [ngClass]="{'is-invalid': maquinaForm.get('marca')?.invalid && maquinaForm.get('marca')?.touched}"
+                  [disabled]="mode === 1">
+                <div class="invalid-feedback" *ngIf="maquinaForm.get('marca')?.touched">
+                  <div *ngIf="maquinaForm.get('marca')?.errors?.['required']">La marca es requerida</div>
+                  <div *ngIf="maquinaForm.get('marca')?.errors?.['minlength']">Mínimo 2 caracteres</div>
+                  <div *ngIf="maquinaForm.get('marca')?.errors?.['maxlength']">Máximo 30 caracteres</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modelo -->
+            <div class="row align-items-center mb-3">
+              <div class="col-md-3">Modelo</div>
+              <div class="col-md-9">
+                <input type="text" class="form-control" formControlName="modelo"
+                  [ngClass]="{'is-invalid': maquinaForm.get('modelo')?.invalid && maquinaForm.get('modelo')?.touched}"
+                  [disabled]="mode === 1">
+                <div class="invalid-feedback" *ngIf="maquinaForm.get('modelo')?.touched">
+                  <div *ngIf="maquinaForm.get('modelo')?.errors?.['required']">El modelo es requerido</div>
+                  <div *ngIf="maquinaForm.get('modelo')?.errors?.['minlength']">Mínimo 2 caracteres</div>
+                  <div *ngIf="maquinaForm.get('modelo')?.errors?.['maxlength']">Máximo 30 caracteres</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Estado -->
+            <div class="row align-items-center mb-3">
+              <div class="col-md-3">Estado</div>
+              <div class="col-md-9">
+                <select class="form-control" formControlName="estado"
+                  [ngClass]="{'is-invalid': maquinaForm.get('estado')?.invalid && maquinaForm.get('estado')?.touched}"
+                  [disabled]="mode === 1">
+                  <option value="">Seleccione un estado</option>
+                  <option *ngFor="let estado of estadosValidos" [value]="estado">{{estado}}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="maquinaForm.get('estado')?.touched">
+                  <div *ngIf="maquinaForm.get('estado')?.errors?.['required']">El estado es requerido</div>
+                  <div *ngIf="maquinaForm.get('estado')?.errors?.['pattern']">Estado inválido</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ubicación -->
+            <div class="row align-items-center mb-3">
+              <div class="col-md-3">Ubicación</div>
+              <div class="col-md-9">
+                <input type="text" class="form-control" formControlName="ubicacion"
+                  [ngClass]="{'is-invalid': maquinaForm.get('ubicacion')?.invalid && maquinaForm.get('ubicacion')?.touched}"
+                  [disabled]="mode === 1">
+                <div class="invalid-feedback" *ngIf="maquinaForm.get('ubicacion')?.touched">
+                  <div *ngIf="maquinaForm.get('ubicacion')?.errors?.['required']">La ubicación es requerida</div>
+                  <div *ngIf="maquinaForm.get('ubicacion')?.errors?.['minlength']">Mínimo 5 caracteres</div>
+                  <div *ngIf="maquinaForm.get('ubicacion')?.errors?.['maxlength']">Máximo 100 caracteres</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Disponibilidad -->
+            <div class="row align-items-center mb-3">
+              <div class="col-md-3">Disponibilidad</div>
+              <div class="col-md-9">
+                <select class="form-control" formControlName="disponibilidad"
+                  [ngClass]="{'is-invalid': maquinaForm.get('disponibilidad')?.invalid && maquinaForm.get('disponibilidad')?.touched}"
+                  [disabled]="mode === 1">
+                  <option *ngFor="let opcion of disponibilidadOpciones" [value]="opcion.value">{{opcion.label}}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="maquinaForm.get('disponibilidad')?.touched && maquinaForm.get('disponibilidad')?.errors?.['required']">
+                  La disponibilidad es requerida
+                </div>
+              </div>
+            </div>
+
+            <!-- Fecha asignación -->
+            <div class="row align-items-center mb-3">
+              <div class="col-md-3">Fecha de Asignación</div>
+              <div class="col-md-9">
+                <input type="date" class="form-control" formControlName="fecha_asignacion" [disabled]="mode === 1">
+              </div>
+            </div>
+
+            <!-- Fecha retiro -->
+            <div class="row align-items-center mb-3">
+              <div class="col-md-3">Fecha de Retiro</div>
+              <div class="col-md-9">
+                <input type="date" class="form-control" formControlName="fecha_retiro"
+                  [ngClass]="{'is-invalid': maquinaForm.get('fecha_retiro')?.errors?.['fechaInvalida']}"
+                  [disabled]="mode === 1">
+                <div class="invalid-feedback" *ngIf="maquinaForm.get('fecha_retiro')?.errors?.['fechaInvalida']">
+                  La fecha de retiro debe ser posterior a la fecha de asignación
+                </div>
+              </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="row mt-4">
+              <div class="col">
+                <button class="btn btn-outline-danger" (click)="back()">
+                  <i class="fas fa-chevron-left"></i> Regresar
+                </button>
+              </div>
+              <div class="col text-right">
+                <button *ngIf="mode === 2" class="btn btn-success" (click)="create()" [disabled]="maquinaForm.invalid">
+                  <i class="fas fa-plus"></i> Crear
+                </button>
+                <button *ngIf="mode === 3" class="btn btn-primary" (click)="update()" [disabled]="maquinaForm.invalid">
+                  <i class="fas fa-save"></i> Actualizar
+                </button>
+                <button *ngIf="mode === 1" class="btn btn-danger" (click)="delete(maquina.id!)">
+                  <i class="fas fa-trash"></i> Eliminar
+                </button>
+              </div>
+            </div>
+
           </form>
-
-          <div *ngIf="isLoading" class="text-center py-5">
-            <i class="fas fa-spinner fa-spin fa-2x"></i> Cargando...
-          </div>
-          <div *ngIf="errorLoading" class="alert alert-danger text-center">
-            Error al cargar los datos. Por favor, inténtalo de nuevo.
-          </div>
         </div>
       </div>
     </div>

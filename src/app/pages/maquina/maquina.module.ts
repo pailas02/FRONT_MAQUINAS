@@ -1,23 +1,24 @@
-// src/app/pages/maquina/maquina.module.ts
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // Necesario para [(ngModel)]
-import { HttpClientModule } from '@angular/common/http'; // Asegura que HttpClient esté disponible
-
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { ListMaquinaComponent } from './list/list.component';
+import { ManageComponent } from './manage/manage.component';
 import { MaquinaRoutingModule } from './maquina-routing.module';
-import { ListComponent as MaquinaListComponent } from './list/list.component'; // Renombrado para evitar conflicto
-import { ManageComponent as MaquinaManageComponent } from './manage/manage.component'; // Renombrado
+
+
+
 
 @NgModule({
   declarations: [
-    MaquinaListComponent,
-    MaquinaManageComponent
+    ListMaquinaComponent,
+    ManageComponent
   ],
   imports: [
     CommonModule,
-    MaquinaRoutingModule,
     FormsModule,
-    HttpClientModule
+    ReactiveFormsModule,
+    MaquinaRoutingModule
   ]
 })
-export class MaquinaModule { }
+export class MaquinaModule {}

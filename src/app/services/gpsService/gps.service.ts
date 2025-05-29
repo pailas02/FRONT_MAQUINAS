@@ -1,38 +1,33 @@
-// src/app/services/gps/gps.service.ts
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { GPS } from 'src/app/models/gps.model';
 import { environment } from 'src/environments/environment';
-import { map } from 'rxjs/operators';
+import { GPS } from '../../models/gps.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GPSService {
-  private apiUrl = `${environment.url_ms_negocio}/gps`; // Ajusta la URL base si es diferente
 
   constructor(private http: HttpClient) { }
 
   list(): Observable<GPS[]> {
-    return this.http.get<{ data: GPS[] }>(this.apiUrl).pipe(
-      map(response => response.data) // Asumo que tu API devuelve { data: [...] }
-    );
+    return this.http.get<GPS[]>(`${environment.url_ms_negocio}/gps`);
   }
 
   view(id: number): Observable<GPS> {
-    return this.http.get<GPS>(`${this.apiUrl}/${id}`);
+    return this.http.get<GPS>(`${environment.url_ms_negocio}/gps/${id}`);
   }
 
   create(newGPS: GPS): Observable<GPS> {
-    return this.http.post<GPS>(this.apiUrl, newGPS);
+    return this.http.post<GPS>(`${environment.url_ms_negocio}/gps`, newGPS);
   }
 
   update(theGPS: GPS): Observable<GPS> {
-    return this.http.put<GPS>(`${this.apiUrl}/${theGPS.id}`, theGPS);
+    return this.http.put<GPS>(`${environment.url_ms_negocio}/gps/${theGPS.id}`, theGPS);
   }
 
-  delete(id: number): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  delete(id: number) {
+    return this.http.delete<GPS>(`${environment.url_ms_negocio}/gps/${id}`);
   }
 }

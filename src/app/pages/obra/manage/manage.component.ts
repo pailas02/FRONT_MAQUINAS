@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Combo } from 'src/app/models/combo.model'; // Para el select de Combo
-import { ComboService } from '../../../services/combo/combos.service'; // Para cargar los combos
+import { CombosService } from '../../../services/combo/combos.service'; // Para cargar los combos
 
 @Component({
   selector: 'app-manage', // Manteniendo tu convención de nombres de selector
@@ -25,7 +25,7 @@ export class ManageComponent implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private obraService: ObraService,
-    private comboService: ComboService, // Inyectamos ComboService
+    private combosService: CombosService, // Inyectamos CombosService
     private router: Router
   ) {
     this.obra = new Obra();
@@ -63,7 +63,7 @@ export class ManageComponent implements OnInit {
   }
 
   loadCombosDisponibles(): void {
-    this.comboService.list().pipe(
+    this.combosService.list().pipe(
       catchError(error => {
         console.error('Error al cargar combos disponibles:', error);
         return of([]); // Retorna un array vacío para no bloquear

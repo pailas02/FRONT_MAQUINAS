@@ -1,13 +1,7 @@
-import { Factura } from "./factura.model";
 import { Servicio } from "./servicio.model";
 
-export class Cuota {
+export class Cuotas {
     id?: number;
-    nombre?: string;
-    monto?: number;
-    estado?: string;
-    servicioId?: Servicio;
-    servicios?: Servicio[];
-    facturaId?: Factura;
-
+    id_servicio?: Servicio[];
+    valor?: number;
 }

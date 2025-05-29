@@ -4,8 +4,11 @@
   <div class="row">
     <div class="col">
       <div class="card shadow">
-        <div class="card-header bg-transparent">
+        <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
           <h3 class="mb-0">Procedimientos de Mantenimiento</h3>
+          <button class="btn btn-primary float-right" (click)="createProcedimientoMantenimiento()">
+            <i class="fas fa-plus"></i> Agregar Vínculo
+          </button>
         </div>
         <div class="card-body">
           <div class="table-responsive">
@@ -22,8 +25,8 @@
               <tbody>
                 <tr *ngFor="let procedimientomantenimiento of procedimientomantenimientos">
                   <td>{{ procedimientomantenimiento.id }}</td>
-                  <td>{{ procedimientomantenimiento.id_procedimiento }}</td>
-                  <td>{{ procedimientomantenimiento.id_mantenimiento }}</td>
+                  <td>{{ procedimientomantenimiento.procedimiento_id }}</td>
+                  <td>{{ procedimientomantenimiento.mantenimiento_id }}</td>
                   <td>{{ procedimientomantenimiento.estado }}</td>
                   <td>
                     <button class="btn btn-sm btn-primary" (click)="edit(procedimientomantenimiento.id)">Editar</button>

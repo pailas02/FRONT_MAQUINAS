@@ -1,38 +1,37 @@
-// src/app/services/maquina/maquinas.service.ts
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Maquina } from 'src/app/models/maquina.model';
 import { environment } from 'src/environments/environment';
-import { map } from 'rxjs/operators';
+import { Maquina } from '../../models/maquina.model'; // Importando el modelo Maquina
 
 @Injectable({
   providedIn: 'root'
 })
-export class MaquinaService {
-  private apiUrl = `${environment.url_ms_negocio}/maquinas`; // Ajusta la URL base si es diferente
+// ¡Modificado aquí! Cambiamos el nombre de la clase del servicio
+export class MaquinaService { // <--- Nombre de la clase del servicio cambiado a MaquinaService
 
   constructor(private http: HttpClient) { }
 
+  // Dentro de la clase MaquinaService, puedes usar el modelo Maquina importado
+  // para tipar tus datos, como ya lo estás haciendo correctamente:
+
   list(): Observable<Maquina[]> {
-    return this.http.get<{ data: Maquina[] }>(this.apiUrl).pipe(
-      map(response => response.data) // Asumo que tu API devuelve { data: [...] }
-    );
+    return this.http.get<Maquina[]>(`${environment.url_ms_negocio}/maquinas`);
   }
 
   view(id: number): Observable<Maquina> {
-    return this.http.get<Maquina>(`${this.apiUrl}/${id}`);
+    return this.http.get<Maquina>(`${environment.url_ms_negocio}/maquinas/${id}`);
   }
 
   create(newMaquina: Maquina): Observable<Maquina> {
-    return this.http.post<Maquina>(this.apiUrl, newMaquina);
+    return this.http.post<Maquina>(`${environment.url_ms_negocio}/maquinas`, newMaquina);
   }
 
   update(theMaquina: Maquina): Observable<Maquina> {
-    return this.http.put<Maquina>(`${this.apiUrl}/${theMaquina.id}`, theMaquina);
+    return this.http.put<Maquina>(`${environment.url_ms_negocio}/maquinas/${theMaquina.id}`, theMaquina);
   }
 
-  delete(id: number): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  delete(id: number) {
+    return this.http.delete<Maquina>(`${environment.url_ms_negocio}/maquinas/${id}`);
   }
 }

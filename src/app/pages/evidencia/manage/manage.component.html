@@ -1,64 +1,67 @@
-<div class="header bg-gradient-danger pb-8 pt-5 pt-md-8">
-</div>
-<!-- Page content -->
+<div class="header bg-gradient-warning pb-8 pt-5 pt-md-8"></div>
 <div class="container-fluid mt--7">
-  <!-- Table -->
   <div class="row">
     <div class="col">
       <div class="card shadow">
-        <div class="card-header bg-transparent">
-          <h3 class="mb-0" *ngIf="mode==1">Detalle</h3>
-          <h3 class="mb-0" *ngIf="mode==2">Creación</h3>
-          <h3 class="mb-0" *ngIf="mode==3">Actualización</h3>
-
-
+        <div class="card-header">
+          <h3 class="mb-0" *ngIf="mode === 'create'">Crear Evidencia</h3>
+          <h3 class="mb-0" *ngIf="mode === 'update'">Editar Evidencia</h3>
+          <h3 class="mb-0" *ngIf="mode === 'view'">Detalle de Evidencia</h3>
         </div>
         <div class="card-body container">
-          <div class="row">
-            <div class="col-3">ID</div>
-            <div class="col-9">
-              <input type="text" class="form-control" [(ngModel)]="evidencia.id" disabled>
+          <form (ngSubmit)="onSubmit()" *ngIf="!isLoading" #form="ngForm">
+            <div class="row mb-3">
+              <div class="col-md-3">Tipo de archivo</div>
+              <div class="col-md-9">
+                <input class="form-control" [(ngModel)]="evidencia.tipo_de_archivo" name="tipo_de_archivo" [disabled]="mode === 'view'" required />
+              </div>
             </div>
-          </div>
-          <br>
-          <div class="row">
-            <div class="col-3">Tipo de Archivo</div>
-            <div class="col-9">
-              <input type="text" class="form-control" [(ngModel)]="evidencia.tipo" [disabled]="mode==1" required>
+
+            <div class="row mb-3">
+              <div class="col-md-3">Fecha de carga</div>
+              <div class="col-md-9">
+                <input type="date" class="form-control" [(ngModel)]="evidencia.fecha_de_carga" name="fecha_de_carga" [disabled]="mode === 'view'" required />
+              </div>
             </div>
-          </div>
-          <br>
-          <div class="row">
-            <div class="col-3">Contenido del Archivo</div>
-            <div class="col-9">
-              <textarea class="form-control" [(ngModel)]="evidencia.contenido" [disabled]="mode==1" required></textarea>
+
+            <div class="row mb-3">
+              <div class="col-md-3">Servicio</div>
+              <div class="col-md-9">
+                <select class="form-control" [(ngModel)]="evidencia.id_servicio" name="id_servicio" [disabled]="mode === 'view'" required>
+                  <option *ngFor="let s of servicios" [value]="s.id">{{ s.nombre || ('Servicio #' + s.id) }}</option>
+                </select>
+              </div>
             </div>
-          </div>
-          <br>
-          <div class="row">
-            <div class="col-3">ID del Servicio</div>
-            <div class="col-9">
-              <input type="text" class="form-control" [(ngModel)]="evidencia.servicioId" [disabled]="mode==1">
+
+            <div class="row mb-3">
+              <div class="col-md-3">Novedad</div>
+              <div class="col-md-9">
+                <select class="form-control" [(ngModel)]="evidencia.novedad_id" name="novedad_id" [disabled]="mode === 'view'" required>
+                  <option *ngFor="let n of novedades" [value]="n.id">{{ n.descripcion || ('Novedad #' + n.id) }}</option>
+                </select>
+              </div>
             </div>
-          </div>
-          <br>
-          <div class="row">
-            <div class="col-3">ID de Novedad</div>
-            <div class="col-9">
-              <input type="text" class="form-control" [(ngModel)]="evidencia.NovedadId" [disabled]="mode==1">
+
+            <div class="row mb-3">
+              <div class="col-md-3">Ruta del archivo</div>
+              <div class="col-md-9">
+                <input class="form-control" [(ngModel)]="evidencia.contenido_archivo" name="contenido_archivo" [disabled]="mode === 'view'" required />
+              </div>
             </div>
-          </div>
-          <br>
-          <div class="row">
-            <div class="col-3"></div>
-            <div class="col-9">
-              <button *ngIf="mode==1" class="btn btn-primary btn-block" (click)="back()">Volver</button>
-              <button *ngIf="mode==2" class="btn btn-primary btn-block" (click)="create()">Crear</button>
-              <button *ngIf="mode==3" class="btn btn-primary btn-block" (click)="update()">Update</button>
+
+            <div class="text-right mt-4">
+              <button type="button" class="btn btn-secondary mr-2" (click)="back()">Volver</button>
+              <button type="submit" class="btn btn-warning" *ngIf="mode !== 'view'">
+                {{ mode === 'create' ? 'Crear' : 'Actualizar' }}
+              </button>
             </div>
+          </form>
+
+          <div *ngIf="isLoading" class="text-center my-4">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p class="mt-2">Cargando evidencia...</p>
           </div>
         </div>
-
       </div>
     </div>
   </div>

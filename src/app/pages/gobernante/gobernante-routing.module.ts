@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { GobernanteListComponent } from './list/list.component';
+import { ListGobernanteComponent } from './list/list.component';
 import { ManageComponent } from './manage/manage.component';
 
 
 const routes: Routes = [
-  { path: 'list', component: GobernanteListComponent },
+  { path: 'list', component: ListGobernanteComponent },
   { path: 'create', component: ManageComponent },
   { path: 'update/:id', component: ManageComponent },
   { path: 'view/:id', component: ManageComponent },

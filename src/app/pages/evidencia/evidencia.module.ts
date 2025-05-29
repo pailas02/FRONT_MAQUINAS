@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { EvidenciaRoutingModule } from './evidencia-routing.module';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ManageComponent } from './manage/manage.component';
+import { ManageEvidenciaComponent } from './manage/manage.component';
 import { ListEvidenciaComponent } from './list/list.component';
 
 
@@ -11,7 +11,7 @@ import { ListEvidenciaComponent } from './list/list.component';
 @NgModule({
   declarations: [
     ListEvidenciaComponent,
-    ManageComponent
+    ManageEvidenciaComponent
 
   ],
   imports: [CommonModule, FormsModule, EvidenciaRoutingModule]

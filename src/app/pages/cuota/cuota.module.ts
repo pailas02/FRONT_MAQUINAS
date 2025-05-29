@@ -1,19 +1,24 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { CuotaRoutingModule } from './cuota-routing.module';
-import { ListComponent } from './list/list.component';
+import { CuotasRoutingModule } from './cuota-routing.module';
+import { ListCuotaComponent } from './list/list.component';
 import { ManageComponent } from './manage/manage.component';
+import { PayComponent } from './pay/pay.component';
 
 
 @NgModule({
   declarations: [
-    ListComponent,
-    ManageComponent
+    ListCuotaComponent,
+    ManageComponent,
+    PayComponent
   ],
   imports: [
     CommonModule,
-    CuotaRoutingModule
+    CuotasRoutingModule,
+    FormsModule,
+    ReactiveFormsModule
   ]
 })
-export class CuotaModule { }
+export class CuotasModule { }

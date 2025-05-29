@@ -3,70 +3,111 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Turno } from 'src/app/models/turno.model';
 import { TurnoService } from 'src/app/services/turno/turno.service';
 import Swal from 'sweetalert2';
-import { of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-manage-turno',
-  templateUrl: './manage.component.html'
+  selector: 'app-manage',
+  templateUrl: './manage.component.html',
+  styleUrls: ['./manage.component.scss']
 })
-export class ManageTurnoComponent implements OnInit {
-  turno: Turno = new Turno();
-  mode: 'view' | 'create' | 'update' = 'create';
-  isLoading = false;
+export class ManageComponent implements OnInit {
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private turnoService: TurnoService
-  ) {}
+  mode: number; //1->View, 2->Create, 3-> Update
+  turno: Turno;
+
+  constructor(private activateRoute: ActivatedRoute,
+    private someTurno: TurnoService,
+    private router: Router
+  ) {
+    this.turno = { id: 0, fecha: '', hora: '', operario_id: 0, maquina_id: 0 }
+  }
 
   ngOnInit(): void {
-    const path = this.route.snapshot.url.map(s => s.path).join('/');
-    if (path.includes('view')) this.mode = 'view';
-    else if (path.includes('update')) this.mode = 'update';
-
-    const id = this.route.snapshot.params['id'];
-    if ((this.mode === 'view' || this.mode === 'update') && id) {
-      this.getTurno(id);
+    const currentUrl = this.activateRoute.snapshot.url.join('/');
+    if (currentUrl.includes('view')) {
+      this.mode = 1;
+    } else if (currentUrl.includes('create')) {
+      this.mode = 2;
+    } else if (currentUrl.includes('update')) {
+      this.mode = 3;
+    }
+    if (this.activateRoute.snapshot.params.id) {
+      this.turno.id = this.activateRoute.snapshot.params.id
+      this.getTurno(this.turno.id)
     }
   }
-
-  getTurno(id: number): void {
-    this.isLoading = true;
-    this.turnoService.view(id).pipe(
-      catchError(error => {
-        Swal.fire('Error', 'No se pudo cargar el turno.', 'error');
-        this.router.navigate(['/turno/list']);
-        return of(null);
-      })
-    ).subscribe(turno => {
-      if (turno) this.turno = turno;
-      this.isLoading = false;
+  getTurno(id: number) {
+    this.someTurno.view(id).subscribe({
+      next: (turno) => {
+        // Format the fecha field to 'yyyy-MM-dd'
+        if (turno.fecha) {
+          turno.fecha = turno.fecha.split('T')[0];
+        }
+        this.turno = turno;
+        console.log('Turno fetched successfully:', this.turno);
+      },
+      error: (error) => {
+        console.error('Error fetching turno:', error);
+      }
     });
   }
-
-  onSubmit(): void {
-    if (this.mode === 'create') {
-      this.turnoService.create(this.turno).subscribe({
-        next: () => {
-          Swal.fire('Creado', 'Turno creado exitosamente.', 'success')
-            .then(() => this.router.navigate(['/turno/list']));
-        },
-        error: () => Swal.fire('Error', 'No se pudo crear el turno.', 'error')
-      });
-    } else if (this.mode === 'update') {
-      this.turnoService.update(this.turno).subscribe({
-        next: () => {
-          Swal.fire('Actualizado', 'Turno actualizado.', 'success')
-            .then(() => this.router.navigate(['/turno/list']));
-        },
-        error: () => Swal.fire('Error', 'No se pudo actualizar.', 'error')
-      });
-    }
+  back() {
+    this.router.navigate(['turno/list'])
   }
-
-  back(): void {
-    this.router.navigate(['/turno/list']);
+  create() {
+    this.someTurno.create(this.turno).subscribe({
+      next: (turno) => {
+        console.log('turno created successfully:', turno);
+        Swal.fire({
+          title: 'Creado!',
+          text: 'Registro creado correctamente.',
+          icon: 'success',
+        })
+        this.router.navigate(['/turno/list']);
+      },
+      error: (error) => {
+        console.error('Error creating turno:', error);
+      }
+    });
+  }
+  update() {
+    this.someTurno.update(this.turno).subscribe({
+      next: (turno) => {
+        console.log('turno updated successfully:', turno);
+        Swal.fire({
+          title: 'Actualizado!',
+          text: 'Registro actualizado correctamente.',
+          icon: 'success',
+        })
+        this.router.navigate(['/turnos/list']);
+      },
+      error: (error) => {
+        console.error('Error updating turno:', error);
+      }
+    });
+  }
+  delete(id: number) {
+    console.log("Delete turno with id:", id);
+    Swal.fire({
+      title: 'Eliminar',
+      text: "Está seguro que quiere eliminar el registro?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.someTurno.delete(id).
+          subscribe(data => {
+            Swal.fire(
+              'Eliminado!',
+              'Registro eliminado correctamente.',
+              'success'
+            )
+            this.ngOnInit();
+          });
+      }
+    })
   }
 }

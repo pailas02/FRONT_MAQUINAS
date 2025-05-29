@@ -1,9 +1,7 @@
 export class Operario {
-    id?: number;
-    nombre?: string;
-    apellido?: string;
-    email?: string;
-    userId?: string;
-    experiencia?: string;
-    especialdidad?: string;
+  id?: number;
+  name?: string;
+  email?: string;
+  user_id: string = '';
+  experiencia: string = '';
 }

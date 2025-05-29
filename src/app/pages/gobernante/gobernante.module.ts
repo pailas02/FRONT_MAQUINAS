@@ -3,14 +3,13 @@ import { RouterModule, Routes } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GobernanteRoutingModule } from './gobernante-routing.module';
-import { GobernanteListComponent } from './list/list.component';
+import { ListGobernanteComponent } from './list/list.component';
 import { ManageComponent } from './manage/manage.component';
-
 
 
 @NgModule({
   declarations: [
-    GobernanteListComponent,
+    ListGobernanteComponent,
     ManageComponent
   ],
   imports: [

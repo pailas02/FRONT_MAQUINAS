@@ -1,126 +1,57 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Evidencia } from 'src/app/models/evidencia.model';
 import { EvidenciaService } from 'src/app/services/evidencia/evidencia.service';
-import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-list-evidencia',
-  templateUrl: './list.component.html',
-  styleUrls: ['./list.component.scss']
+  templateUrl: './list.component.html'
 })
 export class ListEvidenciaComponent implements OnInit {
-
   evidencias: Evidencia[] = [];
+  isLoading = true;
 
-  constructor(private evidenciaService: EvidenciaService, private router: Router, private cdr: ChangeDetectorRef) { }
+  constructor(private service: EvidenciaService, private router: Router) {}
 
   ngOnInit(): void {
-    this.evidenciaService.list().subscribe(
-      data => {
-        this.evidencias = data;
-        this.cdr.detectChanges();
-      },
-      error => {
-        console.error('Error al obtener las evidencias:', error);
-        Swal.fire('Error', 'No se pudieron cargar las evidencias.', 'error');
-      }
-    );
+    this.load();
   }
 
-  edit(id: number) {
-    if (isNaN(id)) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'El ID proporcionado no es válido.'
-      });
-      return;
-    }
-
-    this.router.navigate([`/evidencias/update`, id]).then(
-      success => {
-        if (success) {
-          Swal.fire({
-            icon: 'success',
-            title: 'Redirigido',
-            text: 'Navegación exitosa al formulario de edición.'
-          });
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'No se pudo navegar al formulario de edición.'
-          });
-        }
-      },
-      error => {
-        console.error('Error al navegar:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Ocurrió un error al intentar navegar al formulario de edición.'
-        });
-      }
-    );
-  }
-
-  delete(id: number) {
-    Swal.fire({
-      title: 'Eliminar',
-      text: '¿Está seguro que quiere eliminar el registro?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.evidenciaService.delete(id).subscribe({
-          next: () => {
-            Swal.fire('Eliminado!', 'Registro eliminado correctamente.', 'success');
-            this.evidencias = this.evidencias.filter(evidencia => evidencia.id !== id);
-            this.cdr.detectChanges();
-          },
-          error: (error) => {
-            console.error('Error al eliminar la evidencia:', error);
-            Swal.fire('Error', 'No se pudo eliminar el registro.', 'error');
-          }
-        });
-      }
+  load(): void {
+    this.service.list().pipe(finalize(() => this.isLoading = false)).subscribe({
+      next: data => this.evidencias = data,
+      error: () => Swal.fire('Error', 'No se pudieron cargar las evidencias.', 'error')
     });
   }
 
-  view(id: number) {
-    this.router.navigate([`/evidencias/view`, id]);
+  create(): void {
+    this.router.navigate(['/evidencia/create']);
   }
 
-  navigateToCreate() {
-    this.router.navigate(['/evidencias/create']).then(
-      success => {
-        if (success) {
-          Swal.fire({
-            icon: 'success',
-            title: 'Redirigido',
-            text: 'Navegación exitosa al formulario de creación.'
-          });
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'No se pudo navegar al formulario de creación.'
-          });
-        }
-      },
-      error => {
-        console.error('Error al navegar:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Ocurrió un error al intentar navegar al formulario de creación.'
+  view(id: number | undefined): void {
+    if (id) this.router.navigate(['/evidencia/view', id]);
+  }
+
+  delete(id: number | undefined): void {
+    if (!id) return;
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar'
+    }).then(result => {
+      if (result.isConfirmed) {
+        this.service.delete(id).subscribe({
+          next: () => {
+            Swal.fire('Eliminado', 'Evidencia eliminada.', 'success');
+            this.load();
+          },
+          error: () => Swal.fire('Error', 'No se pudo eliminar.', 'error')
         });
       }
-    );
+    });
   }
 }

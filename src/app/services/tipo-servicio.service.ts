@@ -1,35 +1,33 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { TipoServicio } from 'src/app/models/tipo-servicio.model';
 import { environment } from 'src/environments/environment';
+import { TipoServicio } from '../models/tipo-servicio.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TipoServicioService {
 
-  private baseUrl = `${environment.url_ms_negocio}/tipos-servicio`;
-
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   list(): Observable<TipoServicio[]> {
-    return this.http.get<TipoServicio[]>(this.baseUrl);
+    return this.http.get<TipoServicio[]>(`${environment.url_ms_negocio}/tipo_servicios`);
   }
 
   view(id: number): Observable<TipoServicio> {
-    return this.http.get<TipoServicio>(`${this.baseUrl}/${id}`);
+    return this.http.get<TipoServicio>(`${environment.url_ms_negocio}/tipo_servicios/${id}`);
   }
 
-  create(tipo: TipoServicio): Observable<TipoServicio> {
-    return this.http.post<TipoServicio>(this.baseUrl, tipo);
+  create(newTipoServicio: TipoServicio): Observable<TipoServicio> {
+    return this.http.post<TipoServicio>(`${environment.url_ms_negocio}/tipo_servicios`, newTipoServicio);
   }
 
-  update(tipo: TipoServicio): Observable<TipoServicio> {
-    return this.http.put<TipoServicio>(`${this.baseUrl}/${tipo.id}`, tipo);
+  update(theTipoServicio: TipoServicio): Observable<TipoServicio> {
+    return this.http.put<TipoServicio>(`${environment.url_ms_negocio}/tipo_servicios/${theTipoServicio.id}`, theTipoServicio);
   }
 
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  delete(id: number) {
+    return this.http.delete<TipoServicio>(`${environment.url_ms_negocio}/tipo_servicios/${id}`);
   }
 }

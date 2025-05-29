@@ -1,58 +1,61 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Operario } from 'src/app/models/operario.model'; // Importa el modelo Operario
-import { OperarioService } from 'src/app/services/operario/operario.service'; // Importa el servicio OperatorService
+import { Operario } from 'src/app/models/operario.model';
+import { OperarioService } from 'src/app/services/operario/operario.service';
 import Swal from 'sweetalert2';
-// import { Router } from '@angular/router'; // Importa Router si necesitas navegación
+import { finalize } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-list-operator',
-  templateUrl: './list.component.html',
-  styleUrls: ['./list.component.scss']
+  selector: 'app-list-operario',
+  templateUrl: './list.component.html'
 })
 export class ListOperarioComponent implements OnInit {
+  operarios: Operario[] = [];
+  isLoading = true;
 
-  operarios: Operario[] = []; // Arreglo para almacenar operarios, tipado con el modelo Operario
-
-  // Inyecta el servicio OperatorService y Router (si lo necesitas)
-  constructor(private operarioService: OperarioService , private router: Router) { }
+  constructor(private service: OperarioService, private router: Router) {}
 
   ngOnInit(): void {
-    // Llama al servicio para obtener la lista de operarios
-    this.operarioService.list().subscribe(data => {
-      this.operarios = data; // Asigna los datos a la propiedad operarios
+    this.load();
+  }
+
+  load(): void {
+    this.service.list().pipe(finalize(() => this.isLoading = false)).subscribe({
+      next: data => this.operarios = data,
+      error: () => Swal.fire('Error', 'No se pudieron cargar los operarios.', 'error')
     });
   }
 
-  // Métodos para editar y eliminar (ajusta el tipo de ID según tu modelo Operario)
-  edit(id: number) {
-    this.router.navigate(['operario/update', id])
-    // Implementa navegación, ej: this.router.navigate(['/admin/operator/edit', id]);
+  create(): void {
+    this.router.navigate(['/operario/create']);
   }
 
-  delete(id: number) {
-console.log("Delete seguro with id:", id);
-        Swal.fire({
-          title: 'Eliminar',
-          text: "Está seguro que quiere eliminar el registro?",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Si, eliminar',
-          cancelButtonText: 'Cancelar'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            this.operarioService.delete(id).
-              subscribe(data => {
-                Swal.fire(
-                  'Eliminado!',
-                  'Registro eliminado correctamente.',
-                  'success'
-                )
-                this.ngOnInit();
-              });
-          }
-        })
+  view(id: number | undefined): void {
+    if (id) this.router.navigate(['/operario/view', id]);
+  }
+
+  edit(id: number | undefined): void {
+    if (id) this.router.navigate(['/operario/update', id]);
+  }
+
+  delete(id: number | undefined): void {
+    if (!id) return;
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar'
+    }).then(result => {
+      if (result.isConfirmed) {
+        this.service.delete(id).subscribe({
+          next: () => {
+            Swal.fire('Eliminado', 'Registro eliminado.', 'success');
+            this.load();
+          },
+          error: () => Swal.fire('Error', 'No se pudo eliminar.', 'error')
+        });
+      }
+    });
   }
 }

@@ -62,4 +62,7 @@ export class ListObraMunicipioComponent implements OnInit {
       o.municipio_id.toLowerCase().includes(term)
     );
   }
+  createObra(): void {
+    this.router.navigate(['/obra-municipal/create']);
+  }
 }

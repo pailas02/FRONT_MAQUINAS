@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Factura } from 'src/app/models/factura.model';
 import { FacturaService } from 'src/app/services/factura/factura.service';
+import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -10,110 +10,56 @@ import Swal from 'sweetalert2';
   styleUrls: ['./manage.component.scss']
 })
 export class ManageFacturaComponent implements OnInit {
-  mode: number; //1->View, 2->Create, 3-> Update
-  factura: Factura;
+  facturas: Factura[] = [];
+  isLoading = false;
 
-  constructor(private activateRoute: ActivatedRoute,
+  constructor(
     private facturaService: FacturaService,
-    private router: Router
-  ) {
-    this.factura = { id: 0 };
-  }
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
-    const currentUrl = this.activateRoute.snapshot.url.join('/');
-    if (currentUrl.includes('view')) {
-      this.mode = 1;
-    } else if (currentUrl.includes('create')) {
-      this.mode = 2;
-    } else if (currentUrl.includes('update')) {
-      this.mode = 3;
-    }
-    if (this.activateRoute.snapshot.params.id) {
-      this.factura.id = this.activateRoute.snapshot.params.id;
-      this.getFactura(this.factura.id);
-    }
-  }
-
-  getFactura(id: number) {
-    this.facturaService.view(id).subscribe({
-      next: (factura) => {
-        this.factura = factura;
-        console.log('Factura fetched successfully:', this.factura);
+    this.isLoading = true;
+    this.facturaService.list().subscribe({
+      next: (data) => {
+        this.facturas = data;
+        this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (error) => {
-        console.error('Error fetching factura:', error);
-        Swal.fire('Error', 'No se pudo obtener la factura.', 'error');
+        console.error('Error al obtener las facturas:', error);
+        this.isLoading = false;
+        Swal.fire('Error', 'No se pudieron cargar las facturas.', 'error');
       }
     });
   }
 
-  back() {
-    this.router.navigate(['facturas/list']);
+  edit(id: number): void {
+    this.router.navigate(['/facturas/update', id]);
   }
 
-  create() {
-    if (!this.validateFactura()) {
-      Swal.fire('Error', 'Por favor, complete todos los campos obligatorios.', 'error');
-      return;
-    }
-    this.facturaService.create(this.factura).subscribe({
-      next: (factura) => {
-        console.log('Factura created successfully:', factura);
-        Swal.fire({
-          title: 'Creado!',
-          text: 'Registro creado correctamente.',
-          icon: 'success',
-        }).then(() => {
-          this.router.navigate(['/facturas/list']);
-        });
-      },
-      error: (error) => {
-        console.error('Error creating factura:', error);
-        Swal.fire('Error', 'No se pudo crear el registro.', 'error');
-      }
-    });
+  view(id: number): void {
+    this.router.navigate(['/facturas/view', id]);
   }
 
-  update() {
-    if (!this.validateFactura()) {
-      Swal.fire('Error', 'Por favor, complete todos los campos obligatorios.', 'error');
-      return;
-    }
-    this.facturaService.update(this.factura).subscribe({
-      next: (factura) => {
-        console.log('Factura updated successfully:', factura);
-        Swal.fire({
-          title: 'Actualizado!',
-          text: 'Registro actualizado correctamente.',
-          icon: 'success',
-        }).then(() => {
-          this.router.navigate(['/facturas/list']);
-        });
-      },
-      error: (error) => {
-        console.error('Error updating factura:', error);
-        Swal.fire('Error', 'No se pudo actualizar el registro.', 'error');
-      }
-    });
-  }
-
-  delete(id: number) {
+  delete(id: number): void {
     Swal.fire({
-      title: 'Eliminar',
-      text: '¿Está seguro que quiere eliminar el registro?',
+      title: '¿Eliminar factura?',
+      text: 'Esta acción no se puede deshacer.',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
       confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33'
+    }).then(result => {
       if (result.isConfirmed) {
         this.facturaService.delete(id).subscribe({
           next: () => {
-            Swal.fire('Eliminado!', 'Registro eliminado correctamente.', 'success');
-            this.router.navigate(['/factura/list']);
+            this.facturas = this.facturas.filter(f => f.id !== id);
+            this.cdr.detectChanges();
+            Swal.fire('Eliminado', 'Factura eliminada correctamente.', 'success');
           },
           error: (error) => {
             console.error('Error al eliminar la factura:', error);
@@ -124,7 +70,7 @@ export class ManageFacturaComponent implements OnInit {
     });
   }
 
-  private validateFactura(): boolean {
-    return !!this.factura.detalle && !!this.factura.idCuota;
+  navigateToCreate(): void {
+    this.router.navigate(['/facturas/create']);
   }
 }

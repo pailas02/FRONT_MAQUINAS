@@ -1,35 +1,51 @@
-<div class="header bg-gradient-danger pb-8 pt-5 pt-md-8">
-</div>
+<div class="header bg-gradient-success pb-8 pt-5 pt-md-8"></div>
 <div class="container-fluid mt--7">
   <div class="row">
     <div class="col">
       <div class="card shadow">
-        <div class="card-header bg-transparent">
-          <h3 class="mb-0">Operarios</h3>
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h3 class="mb-0">Listado de Operarios</h3>
+          <button class="btn btn-success" (click)="create()">
+            <i class="fas fa-plus"></i> Nuevo Operario
+          </button>
         </div>
         <div class="card-body">
           <div class="table-responsive">
-            <table class="table align-items-center table-flush">
+            <table class="table table-flush">
               <thead class="thead-light">
                 <tr>
-                  <th scope="col">ID</th>
-                  <th scope="col">ID Usuario</th>
-                  <th scope="col">Experiencia</th>
-                  <th scope="col">Acciones</th>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>Email</th>
+                  <th>Experiencia</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let operario of operarios">
-                  <td>{{ operario.id }}</td>
-                  <td>{{ operario.usuario_id }}</td>
-                  <td>{{ operario.experiencia }}</td>
-                  <td>
-                    <button class="btn btn-sm btn-primary" (click)="edit(operario.id)">Editar</button>
-                    <button class="btn btn-sm btn-danger" (click)="delete(operario.id)">Eliminar</button>
+                <tr *ngIf="isLoading && operarios.length === 0">
+                  <td colspan="5" class="text-center">
+                    <i class="fas fa-spinner fa-spin"></i> Cargando...
                   </td>
                 </tr>
-                <tr *ngIf="operarios.length === 0">
-                  <td colspan="4" class="text-center">No hay operarios disponibles.</td>
+                <tr *ngFor="let operario of operarios">
+                  <td>{{ operario.id }}</td>
+                  <td>{{ operario.name }}</td>
+                  <td>{{ operario.email }}</td>
+                  <td>{{ operario.experiencia }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-info" (click)="view(operario.id)">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-primary ml-1" (click)="edit(operario.id)">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger ml-1" (click)="delete(operario.id)">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="!isLoading && operarios.length === 0">
+                  <td colspan="5" class="text-center">No hay operarios registrados.</td>
                 </tr>
               </tbody>
             </table>

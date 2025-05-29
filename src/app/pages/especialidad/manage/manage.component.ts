@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Especialidad } from 'src/app/models/especialidad.model';
 import { EspecialidadesService } from 'src/app/services/especialidades/especialidades.service';
-import { EspecialidadMaquinaService } from 'src/app/services/especialidadMaquinaria/especialidad-maquina.service';
+import { EspecialidadService } from 'src/app/services/especialidad/especialidad.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -48,7 +48,7 @@ export class ManageComponent implements OnInit {
     });
   }
   back() {
-    this.router.navigate(['especialidades/list'])
+    this.router.navigate(['especialidad/list'])
   }
   create() {
     this.someEspecialidad.create(this.especialidad).subscribe({
@@ -59,7 +59,7 @@ export class ManageComponent implements OnInit {
           text: 'Registro creado correctamente.',
           icon: 'success',
         })
-        this.router.navigate(['/especialidades/list']);
+        this.router.navigate(['/especialidad/list']);
       },
       error: (error) => {
         console.error('Error creating especialidad:', error);
@@ -74,7 +74,7 @@ export class ManageComponent implements OnInit {
           text: 'Registro actualizado correctamente.',
           icon: 'success'
         }).then(() => {
-          this.router.navigate(['/especialidades/list']); // Redirigir a la lista
+          this.router.navigate(['/especialidad/list']); // Redirigir a la lista
         });
       },
       error: (error) => {

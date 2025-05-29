@@ -1,9 +1,8 @@
 import { Especialidad } from "./especialidad.model";
-import { Operario } from "./operario.model";
 
-export class EspecialidadOperario {
+export class OperarioEspecialidad {
     id?: number;
-    especialidadId?: Especialidad;
-    operarioId?: Operario;
-    
+    operario_id?: number;
+    especialidad_id?: number;;
+    nivel_experiencia?: string;
 }

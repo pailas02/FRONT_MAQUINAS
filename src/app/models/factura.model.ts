@@ -1,9 +1,9 @@
-import { Cuota } from "./cuota.model";
+import { Cuotas } from "./cuota.model";
 
 export class Factura {
     id?: number;
     detalle?: string;
     fechaPago?: Date;
-    idCuota?: Cuota;
-    cuotas?: Cuota[];
+    idCuota?: Cuotas;
+    cuotas?: Cuotas[];
 }

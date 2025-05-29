@@ -1,66 +1,36 @@
+// ruler/list/list.component.ts
 import { Component, OnInit } from '@angular/core';
 import { Gobernante } from 'src/app/models/gobernante.model';
 import { GobernanteService } from 'src/app/services/gobernante/gobernante.service';
-import { Router } from '@angular/router';
-import Swal from 'sweetalert2';
+// import { Router } from '@angular/router'; // Import Router if you need navigation
 
 @Component({
-  selector: 'app-gobernante-list',
+  selector: 'app-list-gobernante',
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.scss']
 })
-export class GobernanteListComponent implements OnInit {
+export class ListGobernanteComponent implements OnInit {
 
-  gobernantes: Gobernante[] = [];
-  displayedColumns: string[] = ['id', 'usuario', 'departamento', 'municipio', 'acciones'];
-  
-  constructor(
-    private gobernanteService: GobernanteService,
-    private router: Router
-  ) {}
+  gobernantes: Gobernante[] = []; // Array to store Gobernantes
+
+  // Inject the service and Router (if needed)
+  constructor(private gobernanteService: GobernanteService /*, private router: Router*/) { }
 
   ngOnInit(): void {
-    this.getAll();
-  }
-
-  getAll(): void {
-    this.gobernanteService.list().subscribe({
-      next: (data) => this.gobernantes = data,
-      error: () => Swal.fire('Error', 'No se pudieron cargar los gobernantes', 'error')
+    // Call the service to get the list
+    this.gobernanteService.list().subscribe(data => {
+      this.gobernantes = data; // Assign data to the array property
     });
   }
 
-  goToView(id: number): void {
-    this.router.navigate(['/gobernantes/view', id]);
+  // Methods for edit and delete (adjust ID type based on your model)
+  edit(id: number) {
+    console.log('Editing Gobernante ID:', id);
+    // Implement navigation
   }
 
-  create(): void {
-    this.router.navigate(['/gobernantes/create']);
+  delete(id: number) {
+    console.log('Deleting Gobernante ID:', id);
+    // Implement call to the delete service method
   }
-
-  edit(id: number): void {
-    this.router.navigate(['/gobernantes/update', id]);
-  }
-
-  delete(id: number): void {
-    Swal.fire({
-      title: 'Eliminar',
-      text: '¿Está seguro que desea eliminar este registro?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.gobernanteService.delete(id).subscribe({
-          next: () => {
-            Swal.fire('Eliminado', 'Registro eliminado correctamente.', 'success');
-            this.getAll();
-          },
-          error: () => Swal.fire('Error', 'No se pudo eliminar el registro.', 'error')
-        });
-      }
-    });
-  }
-
 }

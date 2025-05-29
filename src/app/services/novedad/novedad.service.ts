@@ -1,31 +1,33 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Novedad } from 'src/app/models/novedad.model';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
+import { Novedad } from '../../models/novedad.model';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class NovedadService {
-  private baseUrl = 'http://127.0.0.1:3333/novedades';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   list(): Observable<Novedad[]> {
-    return this.http.get<Novedad[]>(this.baseUrl);
+    return this.http.get<Novedad[]>(`${environment.url_ms_negocio}/novedades`);
   }
 
   view(id: number): Observable<Novedad> {
-    return this.http.get<Novedad>(`${this.baseUrl}/${id}`);
+    return this.http.get<Novedad>(`${environment.url_ms_negocio}/novedades/${id}`);
   }
 
-  create(data: Partial<Novedad>): Observable<any> {
-    return this.http.post(this.baseUrl, data);
+  create(newNovedad: Novedad): Observable<Novedad> {
+    return this.http.post<Novedad>(`${environment.url_ms_negocio}/novedades`, newNovedad);
   }
 
-  update(data: Novedad): Observable<any> {
-    return this.http.put(`${this.baseUrl}/${data.id}`, data);
+  update(theNovedad: Novedad): Observable<Novedad> {
+    return this.http.put<Novedad>(`${environment.url_ms_negocio}/novedades/${theNovedad.id}`, theNovedad);
   }
 
-  delete(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/${id}`);
+  delete(id: number) {
+    return this.http.delete<Novedad>(`${environment.url_ms_negocio}/novedades/${id}`);
   }
 }

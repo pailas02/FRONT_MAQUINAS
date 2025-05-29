@@ -2,32 +2,39 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { Cuota } from '../../models/cuota.model';
+import { Cuotas} from '../../models/cuota.model';
 
 @Injectable({
   providedIn: 'root'
 })
-export class CuotaService {
+export class CuotasService {
 
   constructor(private http: HttpClient) { }
 
-  list(): Observable<Cuota[]> {
-    return this.http.get<Cuota[]>(`${environment.url_ms_negocio}/Cuota`);
+  list(): Observable<Cuotas[]> {
+    return this.http.get<Cuotas[]>(`${environment.url_ms_negocio}/cuotas`);
   }
 
-  view(id: number): Observable<Cuota> {
-    return this.http.get<Cuota>(`${environment.url_ms_negocio}/Cuota/${id}`);
+  view(id: number): Observable<Cuotas> {
+    return this.http.get<Cuotas>(`${environment.url_ms_negocio}/cuotas/${id}`);
   }
 
-  create(newQuota: Cuota): Observable<Cuota> {
-    return this.http.post<Cuota>(`${environment.url_ms_negocio}/Cuota`, newQuota);
+  create(newQuota: Cuotas): Observable<Cuotas> {
+    return this.http.post<Cuotas>(`${environment.url_ms_negocio}/cuotas`, newQuota);
   }
 
-  update(theQuota: Cuota): Observable<Cuota> {
-    return this.http.put<Cuota>(`${environment.url_ms_negocio}/Cuota/${theQuota.id}`, theQuota);
+  update(theQuota: Cuotas): Observable<Cuotas> {
+    return this.http.put<Cuotas>(`${environment.url_ms_negocio}/cuotas/${theQuota.id}`, theQuota);
   }
 
   delete(id: number) {
-    return this.http.delete<Cuota>(`${environment.url_ms_negocio}/Cuota/${id}`);
+    return this.http.delete<Cuotas>(`${environment.url_ms_negocio}/cuotas/${id}`);
+  }
+
+  pay(paymentData: any): Observable<any> {
+    const url = `${environment.url_ms_negocio}/cuotas/${paymentData.due.id}/pay`;
+    console.log('URL:', url);
+    console.log('Datos enviados:', paymentData);
+    return this.http.post<any>(url, paymentData);
   }
 }

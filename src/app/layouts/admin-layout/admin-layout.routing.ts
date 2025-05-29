@@ -13,11 +13,11 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'icons',          component: IconsComponent },
     { path: 'maps',           component: MapsComponent },
     {
-        path: 'combo',
+        path: 'combos',
         children: [
           {
             path: '',
-            loadChildren: () => import('src/app/pages/combo/combo.module').then(m => m.ComboModule)
+            loadChildren: () => import('src/app/pages/combos/combos.module').then(m => m.CombosModule)
           }
         ]
     },
@@ -26,7 +26,7 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: () => import('src/app/pages/cuota/cuota.module').then(m => m.CuotaModule)
+            loadChildren: () => import('src/app/pages/cuotas/cuotas-routing.module').then(m => m.CuotasRoutingModule)
           }
         ]
     },
@@ -67,15 +67,6 @@ export const AdminLayoutRoutes: Routes = [
         ]
     },
     {
-        path: 'evidancia',
-        children: [
-          {
-            path: '',
-            loadChildren: () => import('src/app/pages/evidencia/evidencia.module').then(m => m.EvidenciaModule)
-          }
-        ]
-    },
-    {
         path: 'factura',
         children: [
           {
@@ -84,6 +75,16 @@ export const AdminLayoutRoutes: Routes = [
           }
         ]
     },
+    {
+        path: 'evidencia',
+        children: [
+          {
+            path: '',
+            loadChildren: () => import('src/app/pages/evidencia/evidencia.module').then(m => m.EvidenciaModule)
+          }
+        ]
+    },
+
     {
         path: 'gobernante',
         children: [
@@ -94,11 +95,11 @@ export const AdminLayoutRoutes: Routes = [
         ]
     },
     {
-        path: 'gobernante-departamento',
+        path: 'gobernantedepartamento',
         children: [
           {
             path: '',
-            loadChildren: () => import('src/app/pages/gobernante-departamento/gobernante-departamento.module').then(m => m.GobernanteDepartamentoModule)
+            loadChildren: () => import('src/app/pages/gobernantedepartamento/gobernantedepartamento.module').then(m => m.GobernanteDepartamentoModule)
           }
         ]
     },
@@ -112,11 +113,11 @@ export const AdminLayoutRoutes: Routes = [
         ]
     },
     {
-        path: 'gobernante-municipio',
+        path: 'gobernantemunicipio',
         children: [
           {
             path: '',
-            loadChildren: () => import('src/app/pages/gobernante-municipio/gobernante-municipio.module').then(m => m.GobernanteMunicipioModule)
+            loadChildren: () => import('src/app/pages/gobernantemunicipio/gobernantemunicipio.module').then(m => m.GobernanteMunicipioModule)
           }
         ]
     },
@@ -125,20 +126,20 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: () => import('src/app/pages/gps/gps.module').then(m => m.GPSModule)
+            loadChildren: () => import('src/app/pages/gps/gps.module').then(m => m.GpsModule)
           }
         ]
     },
  
-    // {
-    //     path: 'mantenimiento',
-    //     children: [
-    //       {
-    //         path: '',
-    //         loadChildren: () => import('src/app/pages/mantenimiento/mantenimiento.module').then(m => m.MantenimientoModule)
-    //       }
-    //     ]
-    // },
+     {
+         path: 'mantenimiento',
+         children: [
+           {
+             path: '',
+            loadChildren: () => import('src/app/pages/mantenimiento/mantenimiento.module').then(m => m.MantenimientoModule)
+           }
+         ]
+     },
     {
         path: 'maquina',
         children: [
@@ -211,15 +212,15 @@ export const AdminLayoutRoutes: Routes = [
           }
         ]
     },
-    // {
-    //     path: 'procedimiento-mantenimiento',
-    //     children: [
-    //       {
-    //         path: '',
-    //         loadChildren: () => import('src/app/pages/procedimiento-mantenimiento/procedimiento-mantenimiento.module').then(m => m.ProcedimientoMantenimientoModule)
-    //       }
-    //     ]
-    // },
+     {
+         path: 'procedimientomantenimiento',
+         children: [
+           {
+             path: '',
+             loadChildren: () => import('src/app/pages/procedimientomantenimiento/procedimientomantenimiento.module').then(m => m.ProcedimientoMantenimientoModule)
+           }
+         ]
+     },
  
     {
         path: 'seguro',
@@ -244,7 +245,7 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: () => import('src/app/pages/tipo-servicio/tipo-servicio.module').then(m => m.TipoServicioModule)
+            loadChildren: () => import('src/app/pages/tiposervicio/tiposervicio.module').then(m => m.TipoServicioModule)
           }
         ]
     },

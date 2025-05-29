@@ -1,33 +1,31 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Evidencia } from 'src/app/models/evidencia.model';
 import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment';
-import { Evidencia } from '../../models/evidencia.model';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class EvidenciaService {
+  private readonly baseUrl = 'http://127.0.0.1:3333/evidencias';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   list(): Observable<Evidencia[]> {
-    return this.http.get<Evidencia[]>(`${environment.url_ms_negocio}/evidencias`);
+    return this.http.get<Evidencia[]>(this.baseUrl);
   }
 
   view(id: number): Observable<Evidencia> {
-    return this.http.get<Evidencia>(`${environment.url_ms_negocio}/evidencias/${id}`);
+    return this.http.get<Evidencia>(`${this.baseUrl}/${id}`);
   }
 
-  create(newEvidencia: Evidencia): Observable<Evidencia> {
-    return this.http.post<Evidencia>(`${environment.url_ms_negocio}/evidencias`, newEvidencia);
+  create(evidencia: Evidencia): Observable<Evidencia> {
+    return this.http.post<Evidencia>(this.baseUrl, evidencia);
   }
 
-  update(theEvidencia: Evidencia): Observable<Evidencia> {
-    return this.http.put<Evidencia>(`${environment.url_ms_negocio}/evidencias/${theEvidencia.id}`, theEvidencia);
+  update(evidencia: Evidencia): Observable<Evidencia> {
+    return this.http.put<Evidencia>(`${this.baseUrl}/${evidencia.id}`, evidencia);
   }
 
-  delete(id: number) {
-    return this.http.delete<Evidencia>(`${environment.url_ms_negocio}/evidencias/${id}`);
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 }

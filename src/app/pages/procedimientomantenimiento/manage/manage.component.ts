@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProcedimientoMantenimiento } from 'src/app/models/procedimiento-mantenimiento.model';
-import { ProcedimientoMantenimientoService } from 'src/app/services/procedimientoMantenimiento/procedimiento-mantenimiento.service';
+import { ProcedimientoMantenimientoService } from 'src/app/services/procedimientoMantenimientoService/procedimiento-mantenimiento.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -18,7 +18,7 @@ export class ManageComponent implements OnInit {
     private someProcedimientoMantenimiento: ProcedimientoMantenimientoService,
     private router: Router
   ) {
-    this.procedimientomantenimiento = { id: 0 }
+    this.procedimientomantenimiento = { id: 0, procedimiento_id: 0, mantenimiento_id: 0 };
   }
 
   ngOnInit(): void {
@@ -31,7 +31,7 @@ export class ManageComponent implements OnInit {
       this.mode = 3;
     }
     if (this.activateRoute.snapshot.params.id) {
-      this.procedimientomantenimiento.id = this.activateRoute.snapshot.params.id  
+      this.procedimientomantenimiento.id = this.activateRoute.snapshot.params.id
       this.getProcedimientoMantenimiento(this.procedimientomantenimiento.id)
     }
   }
@@ -93,7 +93,7 @@ export class ManageComponent implements OnInit {
       confirmButtonText: 'Si, eliminar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
-      if (result.isConfirmed) { 
+      if (result.isConfirmed) {
         this.someProcedimientoMantenimiento.delete(id).
           subscribe(data => {
             Swal.fire(

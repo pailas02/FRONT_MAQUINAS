@@ -1,113 +1,175 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Cuota } from 'src/app/models/cuota.model';
-import { CuotaService } from 'src/app/services/cuotas/cuotas.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Cuotas } from 'src/app/models/cuota.model';
+import { CuotasService } from 'src/app/services/cuotas/cuotas.service';
+import { ServicioService } from 'src/app/services/servicio/servicio.service';
+import { Servicio } from 'src/app/models/servicio.model';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-manage-cuota',
+  selector: 'app-manage',
   templateUrl: './manage.component.html',
   styleUrls: ['./manage.component.scss']
 })
 export class ManageComponent implements OnInit {
+  mode: number; // 1->View, 2->Create, 3->Update
+  cuota: Cuotas;
+  cuotaForm: FormGroup;
+  availableServices: Servicio[] = [];
 
-  mode: number = 1; // 1: Ver, 2: Crear, 3: Editar
-  cuota: Cuota = {};
+  paymentData = {
+    card: {
+      number: '',
+      exp_year: '',
+      exp_month: '',
+      cvc: ''
+    },
+    customer: {
+      name: '',
+      last_name: '',
+      email: '', 
+      phone: '',
+      doc_number: ''
+    },
+    due: {
+      id: '',
+      id_servicio: '',
+      valor: ''
+    },
+    description: '',
+    tax: '',
+    tax_base: '',
+    dues: ''
+  };
 
   constructor(
-    private route: ActivatedRoute,
-    private cuotaService: CuotaService,
-    private router: Router
-  ) {}
+    private activateRoute: ActivatedRoute,
+    private cuotasService: CuotasService,
+    private servicioService: ServicioService,
+    private router: Router,
+    private fb: FormBuilder
+  ) {
+    this.cuota = { id: 0 };
+    this.createForm();
+  }
 
   ngOnInit(): void {
-    this.detectModeFromUrl();
-    const id = this.route.snapshot.params['id'];
-    if (id) {
-      this.cuota.id = +id;
+    // Set mode based on route
+    const currentUrl = this.activateRoute.snapshot.url.join('/');
+    if (currentUrl.includes('view')) {
+      this.mode = 1;
+      this.cuotaForm.disable();
+    } else if (currentUrl.includes('create')) {
+      this.mode = 2;
+    } else if (currentUrl.includes('update')) {
+      this.mode = 3;
+    }
+
+    // Load services
+    this.loadServices();
+
+    // Load cuota if updating or viewing
+    if (this.activateRoute.snapshot.params.id) {
+      this.cuota.id = this.activateRoute.snapshot.params.id;
       this.loadCuota(this.cuota.id);
     }
   }
 
-  // Determina el modo actual basado en la URL
-  private detectModeFromUrl(): void {
-    const url = this.route.snapshot.url.join('/');
-    if (url.includes('view')) {
-      this.mode = 1;
-    } else if (url.includes('create')) {
-      this.mode = 2;
-    } else if (url.includes('update')) {
-      this.mode = 3;
+  private loadServices(): void {
+    this.servicioService.list().subscribe({
+      next: (services) => {
+        this.availableServices = services;
+      },
+      error: (error) => {
+        console.error('Error fetching services:', error);
+        Swal.fire('Error', 'No se pudieron cargar los servicios', 'error');
+      }
+    });
+  }
+
+  private loadCuota(id: number): void {
+    this.cuotasService.view(id).subscribe({
+      next: (cuota) => {
+        this.cuota = cuota;
+        this.cuotaForm.patchValue({
+          id_servicio: cuota.id_servicio,
+          valor: cuota.valor
+        });
+      },
+      error: (error) => {
+        console.error('Error fetching cuota:', error);
+        Swal.fire('Error', 'No se pudo cargar la cuota', 'error');
+      }
+    });
+  }
+
+  private createForm(): void {
+    this.cuotaForm = this.fb.group({
+      id_servicio: [[], [
+        Validators.required,
+      ]],
+      valor: ['', [
+        Validators.required,
+        Validators.min(0),
+        Validators.pattern(/^[0-9]+([.][0-9]{0,2})?$/) 
+      ]]
+    });
+  }
+
+  back(): void {
+    this.router.navigate(['/cuotas/list']);
+  }
+
+  create(): void {
+    if (this.cuotaForm.valid) {
+      const formValue = this.cuotaForm.value;
+      this.cuotasService.create({
+        ...this.cuota,
+        ...formValue,
+      }).subscribe({
+        next: () => {
+          Swal.fire('Éxito', 'Cuota creada correctamente', 'success');
+          this.router.navigate(['/cuotas/list']);
+        },
+        error: (error) => {
+          console.error('Error creating cuota:', error);
+          Swal.fire('Error', 'No se pudo crear la cuota', 'error');
+        }
+      });
+    } else {
+      Object.keys(this.cuotaForm.controls).forEach(key => {
+        const control = this.cuotaForm.get(key);
+        if (control?.invalid) {
+          control.markAsTouched();
+        }
+      });
     }
   }
 
-  // Carga una cuota desde el backend
-  private loadCuota(id: number): void {
-    this.cuotaService.view(id).subscribe({
-      next: (cuota) => {
-        this.cuota = cuota;
-        console.log('Cuota cargada correctamente:', cuota);
-      },
-      error: (err) => {
-        console.error('Error al obtener cuota:', err);
-      }
-    });
-  }
-
-  // Redirige a la lista de cuotas
-  back(): void {
-    this.router.navigate(['/cuota/list']);
-  }
-
-  // Crea una nueva cuota
-  create(): void {
-    this.cuotaService.create(this.cuota).subscribe({
-      next: () => {
-        Swal.fire('Creado', 'Registro creado correctamente.', 'success');
-        this.back();
-      },
-      error: (err) => {
-        console.error('Error al crear cuota:', err);
-      }
-    });
-  }
-
-  // Actualiza una cuota existente
   update(): void {
-    this.cuotaService.update(this.cuota).subscribe({
-      next: () => {
-        Swal.fire('Actualizado', 'Registro actualizado correctamente.', 'success');
-        this.back();
-      },
-      error: (err) => {
-        console.error('Error al actualizar cuota:', err);
-      }
-    });
-  }
-
-  // Elimina una cuota con confirmación
-  delete(id: number): void {
-    Swal.fire({
-      title: '¿Eliminar?',
-      text: '¿Está seguro que desea eliminar este registro?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.cuotaService.delete(id).subscribe({
-          next: () => {
-            Swal.fire('Eliminado', 'Registro eliminado correctamente.', 'success');
-            this.back();
-          },
-          error: (err) => {
-            console.error('Error al eliminar cuota:', err);
-          }
-        });
-      }
-    });
+    if (this.cuotaForm.valid) {
+      const formValue = this.cuotaForm.value;
+      this.cuotasService.update({
+        ...this.cuota,
+        ...formValue,
+      }).subscribe({
+        next: () => {
+          Swal.fire('Éxito', 'Cuota actualizada correctamente', 'success');
+          this.router.navigate(['/cuotas/list']);
+        },
+        error: (error) => {
+          console.error('Error updating cuota:', error);
+          Swal.fire('Error', 'No se pudo actualizar la cuota', 'error');
+        }
+      });
+    } else {
+      Object.keys(this.cuotaForm.controls).forEach(key => {
+        const control = this.cuotaForm.get(key);
+        if (control?.invalid) {
+          control.markAsTouched();
+        }
+      });
+    }
   }
 }

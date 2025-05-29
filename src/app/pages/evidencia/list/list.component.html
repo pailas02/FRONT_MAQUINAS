@@ -1,41 +1,50 @@
-<div class="header bg-gradient-danger pb-8 pt-5 pt-md-8">
-</div>
+<div class="header bg-gradient-warning pb-8 pt-5 pt-md-8"></div>
 <div class="container-fluid mt--7">
   <div class="row">
     <div class="col">
       <div class="card shadow">
-        <div class="card-header bg-transparent">
-          <h3 class="mb-0">Evidencias</h3>
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h3 class="mb-0">Listado de Evidencias</h3>
+          <button class="btn btn-warning" (click)="create()">
+            <i class="fas fa-plus"></i> Nueva Evidencia
+          </button>
         </div>
         <div class="card-body">
           <div class="table-responsive">
-            <table class="table align-items-center table-flush">
+            <table class="table table-flush">
               <thead class="thead-light">
                 <tr>
-                  <th scope="col">ID</th>
-                  <th scope="col">Tipo de Archivo</th>
-                  <th scope="col">Contenido Archivo</th>
-                  <th scope="col">Fecha de Carga</th>
-                  <th scope="col">ID Servicio</th>
-                  <th scope="col">ID Novedad</th>
-                  <th scope="col">Acciones</th>
+                  <th>ID</th>
+                  <th>Tipo</th>
+                  <th>Fecha</th>
+                  <th>Servicio</th>
+                  <th>Novedad</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let evidencia of evidencias">
-                  <td>{{ evidencia.id }}</td>
-                  <td>{{ evidencia.tipo_de_archivo }}</td>
-                  <td>{{ evidencia.contenido_archivo }}</td>
-                  <td>{{ evidencia.fecha_de_carga | date:'yyyy-MM-dd HH:mm' }}</td>
-                  <td>{{ evidencia.id_servicio }}</td>
-                  <td>{{ evidencia.novedad_id }}</td>
-                  <td>
-                    <button class="btn btn-sm btn-primary" (click)="edit(evidencia.id)">Editar</button>
-                    <button class="btn btn-sm btn-danger" (click)="delete(evidencia.id)">Eliminar</button>
+                <tr *ngIf="isLoading && evidencias.length === 0">
+                  <td colspan="6" class="text-center">
+                    <i class="fas fa-spinner fa-spin"></i> Cargando...
                   </td>
                 </tr>
-                <tr *ngIf="evidencias.length === 0">
-                  <td colspan="8" class="text-center">No hay evidencias disponibles.</td>
+                <tr *ngFor="let e of evidencias">
+                  <td>{{ e.id }}</td>
+                  <td>{{ e.tipo_de_archivo }}</td>
+                  <td>{{ e.fecha_de_carga | date:'shortDate' }}</td>
+                  <td>{{ e.id_servicio }}</td>
+                  <td>{{ e.novedad_id }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-info" (click)="view(e.id)">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger ml-1" (click)="delete(e.id)">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="!isLoading && evidencias.length === 0">
+                  <td colspan="6" class="text-center">No hay evidencias registradas.</td>
                 </tr>
               </tbody>
             </table>

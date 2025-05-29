@@ -1,7 +1,7 @@
-import { EspecialidadesMaquina } from './especialidades-maquina.model';
+import { EspecialidadMaquinaria } from './especialidades-maquina.model';
 
-describe('EspecialidadesMaquina', () => {
+describe('EspecialidadMaquinaria', () => {
   it('should create an instance', () => {
-    expect(new EspecialidadesMaquina()).toBeTruthy();
+    expect(new EspecialidadMaquinaria()).toBeTruthy();
   });
 });

@@ -1,5 +1,8 @@
+import { Maquina } from "./maquina.model";
+import { Procedimiento } from "./procedimiento.model";
+
 export class Mantenimiento {
-     id?: number;
+    id?: number;
     fecha?: Date;
     estado?: string;
     maquina_id?: number;
