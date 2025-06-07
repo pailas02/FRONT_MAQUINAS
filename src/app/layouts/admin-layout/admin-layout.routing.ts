@@ -5,6 +5,8 @@ import { IconsComponent } from '../../pages/icons/icons.component';
 import { MapsComponent } from '../../pages/maps/maps.component';
 import { UserProfileComponent } from '../../pages/user-profile/user-profile.component';
 import { TablesComponent } from '../../pages/tables/tables.component';
+import { RequestResetPasswordComponent } from 'src/app/pages/request-reset-password/request-reset-password.component';
+import { ResetPasswordSentComponentComponent } from 'src/app/pages/reset-password-sent-component/reset-password-sent-component.component';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent },
@@ -94,6 +96,8 @@ export const AdminLayoutRoutes: Routes = [
           }
         ]
     },
+
+
     {
         path: 'gobernantedepartamento',
         children: [
@@ -267,4 +271,9 @@ export const AdminLayoutRoutes: Routes = [
           }
         ]
     },
+    
+    { path: 'forgot-password', component: RequestResetPasswordComponent },
+
+    { path: 'reset-password-sent', component: ResetPasswordSentComponentComponent },
+
 ];

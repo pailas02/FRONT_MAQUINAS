@@ -1,3 +1,4 @@
+// list.component.ts
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { PolizaMaquina } from 'src/app/models/poliza.model';
@@ -27,15 +28,15 @@ export class ListPolizaMaquinaComponent implements OnInit {
   }
 
   create(): void {
-    this.router.navigate(['/poliza/create']);
+    this.router.navigate(['/poliza-maquina/create']);
   }
 
   view(id: number | undefined): void {
-    if (id) this.router.navigate(['/poliza/view', id]);
+    if (id) this.router.navigate(['/poliza-maquina/view', id]);
   }
 
   edit(id: number | undefined): void {
-    if (id) this.router.navigate(['/poliza/update', id]);
+    if (id) this.router.navigate(['/poliza-maquina/update', id]);
   }
 
   delete(id: number | undefined): void {

@@ -1,0 +1,12 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="p-4 max-w-md mx-auto">
+  <label>Email:</label>
+  <input type="email" formControlName="email" class="form-control mb-2" />
+
+  <label>Código de verificación:</label>
+  <input type="text" formControlName="code" maxlength="6" class="form-control mb-2" />
+
+  <label>Nueva contraseña:</label>
+  <input type="password" formControlName="newPassword" class="form-control mb-4" />
+
+  <button type="submit" class="btn btn-primary w-full">Cambiar contraseña</button>
+</form>

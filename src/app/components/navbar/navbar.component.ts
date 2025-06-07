@@ -4,7 +4,7 @@ import { Location, LocationStrategy, PathLocationStrategy } from '@angular/commo
 import { Router } from '@angular/router';
 import { User } from 'src/app/models/user.model';
 import { Subscription } from 'rxjs';
-import { SecurityService } from 'src/app/services/security.service';
+import { SecurityService } from 'src/app/services/security/security.service';
 
 @Component({
   selector: 'app-navbar',
@@ -42,5 +42,11 @@ export class NavbarComponent implements OnInit {
     }
     return 'Dashboard';
   }
+
+  logout() {
+  this.securityService.logout();
+  this.router.navigate(['/login']);
+}
+
 
 }

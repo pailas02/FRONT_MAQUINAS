@@ -17,6 +17,7 @@
                   <th>ID</th>
                   <th>Seguro</th>
                   <th>Máquina</th>
+                  <th>Operario</th>
                   <th>Tipo</th>
                   <th>Inicio</th>
                   <th>Fin</th>
@@ -25,14 +26,15 @@
               </thead>
               <tbody>
                 <tr *ngIf="isLoading && polizas.length === 0">
-                  <td colspan="7" class="text-center">
+                  <td colspan="8" class="text-center">
                     <i class="fas fa-spinner fa-spin"></i> Cargando...
                   </td>
                 </tr>
                 <tr *ngFor="let poliza of polizas">
                   <td>{{ poliza.id }}</td>
                   <td>{{ poliza.seguro_id }}</td>
-                  <td>{{ poliza.maquina_id }}</td>
+                  <td>{{ poliza.maquina_id || '-' }}</td>
+                  <td>{{ poliza.operario_id || '-' }}</td>
                   <td>{{ poliza.tipo_poliza }}</td>
                   <td>{{ poliza.fechaInicio }}</td>
                   <td>{{ poliza.fechaFin }}</td>
@@ -49,7 +51,7 @@
                   </td>
                 </tr>
                 <tr *ngIf="!isLoading && polizas.length === 0">
-                  <td colspan="7" class="text-center">No hay pólizas registradas.</td>
+                  <td colspan="8" class="text-center">No hay pólizas registradas.</td>
                 </tr>
               </tbody>
             </table>

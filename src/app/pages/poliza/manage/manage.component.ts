@@ -1,6 +1,7 @@
+// manage.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PolizaMaquina } from 'src/app/models/poliza.model';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PolizaMaquinaService } from 'src/app/services/poliza/poliza.service';
 import Swal from 'sweetalert2';
 import { of } from 'rxjs';
@@ -11,17 +12,22 @@ import { catchError } from 'rxjs/operators';
   templateUrl: './manage.component.html'
 })
 export class ManagePolizaMaquinaComponent implements OnInit {
-  poliza: PolizaMaquina = new PolizaMaquina();
+  form!: FormGroup;
   mode: 'create' | 'view' | 'update' = 'create';
   isLoading = false;
+  tiposMaquina = ['TODO_RIESGO_MAQUINARIA', 'RC_MAQUINARIA'];
+  tiposOperario = ['RC_OPERARIO', 'ACCIDENTE_OPERARIO'];
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private fb: FormBuilder,
     private service: PolizaMaquinaService
   ) {}
 
   ngOnInit(): void {
+    this.initForm();
+
     const path = this.route.snapshot.url.map(s => s.path).join('/');
     if (path.includes('view')) this.mode = 'view';
     else if (path.includes('update')) this.mode = 'update';
@@ -32,6 +38,26 @@ export class ManagePolizaMaquinaComponent implements OnInit {
     }
   }
 
+  initForm(): void {
+    this.form = this.fb.group({
+      seguro_id: [null, [Validators.required, Validators.min(1)]],
+      maquina_id: [null],
+      operario_id: [null],
+      tipo_poliza: [null, Validators.required],
+      fechaInicio: [null, Validators.required],
+      fechaFin: [null, Validators.required],
+      tipoEntidad: [null, Validators.required],
+    });
+
+    this.form.get('tipoEntidad')?.valueChanges.subscribe(value => {
+      if (value === 'maquina') {
+        this.form.patchValue({ operario_id: null });
+      } else if (value === 'operario') {
+        this.form.patchValue({ maquina_id: null });
+      }
+    });
+  }
+
   getPoliza(id: number): void {
     this.isLoading = true;
     this.service.view(id).pipe(
@@ -40,37 +66,87 @@ export class ManagePolizaMaquinaComponent implements OnInit {
         this.router.navigate(['/poliza-maquina/list']);
         return of(null);
       })
-    ).subscribe((data) => {
-      if (data) this.poliza = data;
+    ).subscribe(data => {
+      if (data) {
+        const tipoEntidad = data.operario_id ? 'operario' : 'maquina';
+        this.form.patchValue({
+          seguro_id: data.seguro_id,
+          maquina_id: data.maquina_id,
+          operario_id: data.operario_id,
+          tipo_poliza: data.tipo_poliza,
+          fechaInicio: data.fecha_inicio,
+          fechaFin: data.fecha_fin,
+          tipoEntidad
+        });
+      }
       this.isLoading = false;
     });
   }
 
   onSubmit(): void {
-  this.poliza.seguro_id = Number(this.poliza.seguro_id);
-  this.poliza.maquina_id = Number(this.poliza.maquina_id);
+    if (this.form.invalid) return;
+
+    const data = this.form.value;
+
+    if ((data.operario_id && data.maquina_id) || (!data.operario_id && !data.maquina_id)) {
+      Swal.fire('Error', 'Debe asignar una máquina o un operario, no ambos.', 'error');
+      return;
+    }
+
+    if (data.operario_id && !this.tiposOperario.includes(data.tipo_poliza)) {
+      Swal.fire('Error', 'Tipo de póliza inválido para operario.', 'error');
+      return;
+    }
+
+    if (data.maquina_id && !this.tiposMaquina.includes(data.tipo_poliza)) {
+      Swal.fire('Error', 'Tipo de póliza inválido para maquinaria.', 'error');
+      return;
+    }
+
+    const payload = {
+      seguro_id: data.seguro_id,
+      maquina_id: data.maquina_id,
+      operario_id: data.operario_id,
+      tipo_poliza: data.tipo_poliza,
+      fecha_inicio: data.fechaInicio,
+      fecha_fin: data.fechaFin,
+    };
+
     if (this.mode === 'create') {
-      this.service.create(this.poliza).subscribe({
+      this.service.create(payload).subscribe({
         next: () => {
           Swal.fire('Creado', 'Registro guardado.', 'success').then(() =>
             this.router.navigate(['/poliza-maquina/list'])
           );
         },
-        error: () => Swal.fire('Error', 'No se pudo crear.', 'error')
+        error: (err) => {
+          const errores = err?.error?.errors?.errors;
+          const mensaje = errores?.map((e: any) => `• ${e.message}`).join('<br>') || 'Error desconocido.';
+          Swal.fire({ title: 'Error', html: mensaje, icon: 'error' });
+        }
       });
     } else if (this.mode === 'update') {
-      this.service.update(this.poliza).subscribe({
+      const id = this.route.snapshot.params['id'];
+      this.service.update({ id, ...payload }).subscribe({
         next: () => {
           Swal.fire('Actualizado', 'Registro actualizado.', 'success').then(() =>
             this.router.navigate(['/poliza-maquina/list'])
           );
         },
-        error: () => Swal.fire('Error', 'No se pudo actualizar.', 'error')
+        error: (err) => {
+          const errores = err?.error?.errors?.errors;
+          const mensaje = errores?.map((e: any) => `• ${e.message}`).join('<br>') || 'Error desconocido.';
+          Swal.fire({ title: 'Error', html: mensaje, icon: 'error' });
+        }
       });
     }
   }
 
   back(): void {
     this.router.navigate(['/poliza-maquina/list']);
+  }
+
+  get f() {
+    return this.form.controls;
   }
 }

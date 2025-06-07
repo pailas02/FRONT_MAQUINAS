@@ -9,7 +9,7 @@ import {
 import { Observable, throwError } from 'rxjs'; // Importa throwError para manejo de errores
 import { catchError } from 'rxjs/operators'; // Importa catchError desde 'rxjs/operators'
 
-import { SecurityService } from '../services/security.service'; // Asegúrate de actualizar esta ruta
+import { SecurityService } from '../services/security/security.service'; // Asegúrate de actualizar esta ruta
 import { Router } from '@angular/router'; // Importa Router
 import Swal from 'sweetalert2'; // Asumo que usas SweetAlert2, si no, actualiza o remueve
 

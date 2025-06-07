@@ -1,7 +1,7 @@
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
@@ -17,11 +17,15 @@ import { ComponentsModule } from './components/components.module';
 // import { ManageComponent } from './pages/theaters/manage/manage.component'; // Ya declarado en TheatersModule
 import { ManageComponent } from './pages/obra-municipal/manage/manage.component'; // Asegúrate de que TheatersModule esté importado
 import { AuthInterceptor } from './interceptor/oauth.interceptor';
+import { RequestResetPasswordComponent } from './pages/request-reset-password/request-reset-password.component';
+import { ResetPasswordSentComponentComponent } from './pages/reset-password-sent-component/reset-password-sent-component.component';
+import { VerifyCodeComponent } from './verify-code/verify-code.component';
 
 @NgModule({
   imports: [
     BrowserAnimationsModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpClientModule,
     ComponentsModule,
     NgbModule,
@@ -32,9 +36,16 @@ import { AuthInterceptor } from './interceptor/oauth.interceptor';
     AppComponent,
     AdminLayoutComponent,
     AuthLayoutComponent,
+    RequestResetPasswordComponent,
+    ResetPasswordSentComponentComponent,
+    VerifyCodeComponent,
   ],
   providers: [
-   AuthInterceptor
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true,
+    }
   ],
   bootstrap: [AppComponent]
 })

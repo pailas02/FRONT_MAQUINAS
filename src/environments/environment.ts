@@ -5,7 +5,9 @@
 export const environment = {
   production: false,
   url_ms_negocio: 'http://127.0.0.1:3333',
-  url_ms_security: 'http://127.0.0.1:3000',
+  // ¡CAMBIO AQUÍ! Añade la ruta base del controlador de seguridad de Spring Boot.
+  //url_ms_security: 'http://127.0.0.1:8081/api/public/security',
+  url_ms_security: 'http://127.0.0.1:8081',
 };
 
 
@@ -16,4 +18,4 @@ export const environment = {
  * This import should be commented out in production mode because it will have a negative impact
  * on performance if an error is thrown.
  */
-// import 'zone.js/dist/zone-error';  // Included with Angular CLI.
+// import 'zone.js/dist/zone-error';   // Included with Angular CLI.
