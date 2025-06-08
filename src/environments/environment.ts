@@ -5,17 +5,11 @@
 export const environment = {
   production: false,
   url_ms_negocio: 'http://127.0.0.1:3333',
-  // ¡CAMBIO AQUÍ! Añade la ruta base del controlador de seguridad de Spring Boot.
-  //url_ms_security: 'http://127.0.0.1:8081/api/public/security',
-  url_ms_security: 'http://127.0.0.1:8081',
+  url_ms_security: 'http://localhost:8081',
+  githubClientId: 'Ov23likfQO4LaVifBzOd',
+  googleClientId: '342832346997-bkbl1skrkat3jbjbireb4e9k4tjpdi7n.apps.googleusercontent.com',
+  googleIssuer: 'https://accounts.google.com' // **NUEVO** - El emisor de Google para OpenID Connect
+  
+
+
 };
-
-
-/*
- * For easier debugging in development mode, you can import the following file
- * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.
- *
- * This import should be commented out in production mode because it will have a negative impact
- * on performance if an error is thrown.
- */
-// import 'zone.js/dist/zone-error';   // Included with Angular CLI.

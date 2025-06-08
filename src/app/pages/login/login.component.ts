@@ -1,116 +1,156 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+// ✅ src/app/pages/login/login.component.ts
+import { Component, OnInit, NgZone, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 
 import { SecurityService } from 'src/app/services/security/security.service';
-import { User } from 'src/app/models/user.model';
+import { LoginRequest } from 'src/app/models/login-request';
+import { AuthService } from 'src/app/services/auth.service';
+import { environment } from 'src/environments/environment';
+
+declare var grecaptcha: any;
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnInit {
-  // Modelo del usuario (email y contraseña)
-  user: User;
+export class LoginComponent implements OnInit, AfterViewInit {
+  loginForm: LoginRequest = new LoginRequest();
+  recaptchaToken: string = '';
+  recaptchaWidgetId: any;
+  isLoading: boolean = false;
+
+  @ViewChild('recaptchaContainer') recaptchaContainer: ElementRef;
 
   constructor(
-    private securityService: SecurityService, // Servicio para lógica de autenticación
-    private router: Router,                   // Para navegación en Angular
-    private ngZone: NgZone                    // Para ejecutar código dentro de la zona de Angular y asegurar la detección de cambios
-  ) {
-    // Inicializamos el modelo del usuario vacío al construir el componente
-    this.user = { email: '', password: '' };
-  }
+    private securityService: SecurityService,
+    private router: Router,
+    private ngZone: NgZone,
+    private authService: AuthService
+  ) { }
 
-  /**
-   * ngOnInit se ejecuta una vez después de la inicialización de las propiedades del componente
-   * y antes de que la vista se haya renderizado.
-   */
   ngOnInit() {
-    // Si necesitas alguna inicialización que no dependa del DOM, va aquí.
+    if (this.securityService.existSession() || this.securityService.hasGoogleValidAccessToken()) {
+      this.router.navigate(['dashboard']);
+    }
   }
 
-  /**
-   * Método para iniciar sesión.
-   * Valida la presencia del token de reCAPTCHA y luego llama al servicio de seguridad.
-   */
-  login() {
-    // Paso 1: Validar si el reCAPTCHA fue resuelto
-    // Paso 2: Preparar los datos de inicio de sesión incluyendo el token de reCAPTCHA
-    const loginData = {
-      ...this.user // Desestructura el email y password del objeto user
-    };
+  ngAfterViewInit(): void {
+    this.renderRecaptchaWidget();
+  }
 
-    // Paso 3: Llamar al servicio de seguridad para intentar el login
-    this.securityService.login(loginData).subscribe({
+  private renderRecaptchaWidget(): void {
+    if (window.hasOwnProperty('grecaptcha') && grecaptcha.render && this.recaptchaContainer) {
+      this.recaptchaWidgetId = grecaptcha.render(this.recaptchaContainer.nativeElement, {
+        sitekey: '6LdB9VQrAAAAALs9_mS_RQTv5rxJDq89Drmee44R',
+        callback: (response: string) => {
+          this.ngZone.run(() => {
+            this.recaptchaToken = response;
+            this.loginForm.captcha = response;
+          });
+        },
+        'expired-callback': () => {
+          this.ngZone.run(() => {
+            this.recaptchaToken = '';
+            this.loginForm.captcha = '';
+            Swal.fire('reCAPTCHA Expirado', 'Por favor, verifica el reCAPTCHA nuevamente.', 'info');
+          });
+        }
+      });
+    } else {
+      setTimeout(() => this.renderRecaptchaWidget(), 300);
+    }
+  }
+
+  login(): void {
+    if (!this.recaptchaToken) {
+      Swal.fire('reCAPTCHA', 'Por favor, verifica el reCAPTCHA.', 'warning');
+      return;
+    }
+
+    this.isLoading = true;
+    this.securityService.login(this.loginForm).subscribe({
       next: (data) => {
-        // Paso 4: Manejar la respuesta del servicio
-        if (data.requires2FA) {
-          // Si el servidor indica que se requiere autenticación de dos factores (2FA)
+        this.isLoading = false;
+        if (data.user && data.user._id && !data.token) {
           this.solicitarCodigo2FA(data.user._id);
-        } else {
-          // Si no se requiere 2FA, el login fue exitoso. Guarda la sesión y redirige.
+        } else if (data.token) {
           this.securityService.saveSession(data);
-          this.router.navigate(['dashboard']); // Redirige al dashboard
+          this.router.navigate(['dashboard']);
+        } else {
+          Swal.fire('Error', 'Respuesta inesperada del servidor.', 'error');
         }
       },
       error: (err) => {
-        // Paso 5: Manejar errores de autenticación
+        this.isLoading = false;
         let errorMessage = 'Usuario o contraseña inválido.';
-        // Intenta obtener un mensaje de error más específico del backend si está disponible
         if (err.error && err.error.message) {
           errorMessage = err.error.message;
+        } else if (err.status === 401) {
+          errorMessage = 'Credenciales incorrectas.';
         }
         Swal.fire('Autenticación Fallida', errorMessage, 'error');
+
+        if (window.hasOwnProperty('grecaptcha') && this.recaptchaWidgetId !== undefined) {
+          grecaptcha.reset(this.recaptchaWidgetId);
+          this.recaptchaToken = '';
+          this.loginForm.captcha = '';
+        }
       }
     });
   }
 
-  /**
-   * Muestra una ventana de SweetAlert2 para solicitar el código de autenticación de dos factores (2FA).
-   * Permite múltiples intentos y maneja el bloqueo de la cuenta.
-   * @param userId El ID del usuario que requiere 2FA.
-   * @param intentos El número de intento actual (por defecto 1).
-   */
-  private solicitarCodigo2FA(userId: string, intentos = 1) {
+  private solicitarCodigo2FA(userId: string, attempts = 1): void {
     Swal.fire({
-      title: `Segundo Factor (Intento ${intentos}/3)`,
-      text: 'Ingresa el código de autenticación enviado a tu dispositivo.',
+      title: `Segundo Factor (Intento ${attempts}/3)`,
+      text: 'Ingresa el código enviado a tu correo.',
       input: 'text',
       inputPlaceholder: 'Código 2FA',
       showCancelButton: true,
       confirmButtonText: 'Validar',
       cancelButtonText: 'Cancelar',
-      allowOutsideClick: false, // Previene que el usuario cierre el modal haciendo clic fuera
-      allowEscapeKey: false     // Previene que el usuario cierre el modal con la tecla ESC
+      allowOutsideClick: false,
+      allowEscapeKey: false
     }).then(result => {
-      // Verifica si el usuario confirmó y proporcionó un valor
       if (result.isConfirmed && result.value) {
-        // Llama al servicio de seguridad para validar el código 2FA
+        this.isLoading = true;
         this.securityService.validate2FA(userId, result.value).subscribe({
           next: (data2FA) => {
-            // Si el código 2FA es correcto, guarda la sesión y redirige
-            this.securityService.saveSession(data2FA);
-            this.router.navigate(['dashboard']);
+            this.isLoading = false;
+            if (data2FA && data2FA.token) {
+              this.securityService.saveSession(data2FA);
+              this.router.navigate(['dashboard']);
+            } else {
+              Swal.fire('Error', 'Código inválido o respuesta incorrecta.', 'error');
+            }
           },
           error: (err) => {
-            // Manejo de errores al validar el 2FA
+            this.isLoading = false;
             const msg = err?.error?.message || 'Error al validar el código 2FA.';
-            if (msg === 'Número máximo de intentos alcanzado') {
-              Swal.fire('Bloqueado', 'Has superado el número máximo de intentos. Tu cuenta podría estar bloqueada temporalmente.', 'error');
-            } else if (intentos < 3) {
-              // Si aún quedan intentos, notifica y permite un nuevo intento
-              Swal.fire('Código incorrecto', 'El código ingresado no es válido. Intenta nuevamente.', 'warning').then(() => {
-                this.solicitarCodigo2FA(userId, intentos + 1); // Llama recursivamente para un nuevo intento
-              });
+            if (msg === 'Número máximo de intentos alcanzado' || attempts >= 3) {
+              Swal.fire('Bloqueado', 'Has superado el número máximo de intentos.', 'error');
             } else {
-              // Si se superaron los intentos máximos o un error genérico
-              Swal.fire('Error de Validación', 'Se alcanzó el máximo de intentos o un error inesperado ocurrió.', 'error');
+              Swal.fire('Código incorrecto', 'Intenta nuevamente.', 'warning').then(() => {
+                this.solicitarCodigo2FA(userId, attempts + 1);
+              });
             }
           }
         });
+      } else {
+        this.isLoading = false;
+        Swal.fire('Cancelado', 'La autenticación 2FA fue cancelada.', 'info');
       }
     });
   }
+
+  onGoogleLogin(): void {
+    this.authService.loginWithGoogle();
+  }
+
+  onGithubLogin(): void {
+    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${environment.githubClientId}&redirect_uri=${encodeURIComponent(environment.url_ms_security + '/api/auth/github/callback')}&scope=user:email`;
+    window.location.href = githubAuthUrl;
+  }
+
 }
