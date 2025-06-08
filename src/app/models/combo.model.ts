@@ -1,5 +1,8 @@
 import { Servicio } from "./servicio.model";
 export class Combo {
-    id?: number;
-    servicio_id?: Servicio;;
+    public id?: number;
+    public servicio_id?: number; // Clave foránea para la relación con Servicio
+    public created_at?: string;
+    public updated_at?: string;
+
 }

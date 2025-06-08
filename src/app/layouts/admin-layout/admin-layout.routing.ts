@@ -5,8 +5,7 @@ import { IconsComponent } from '../../pages/icons/icons.component';
 import { MapsComponent } from '../../pages/maps/maps.component';
 import { UserProfileComponent } from '../../pages/user-profile/user-profile.component';
 import { TablesComponent } from '../../pages/tables/tables.component';
-import { RequestResetPasswordComponent } from 'src/app/pages/request-reset-password/request-reset-password.component';
-import { ResetPasswordSentComponentComponent } from 'src/app/pages/reset-password-sent-component/reset-password-sent-component.component';
+import { AuthenticatedGuard } from 'src/app/gurds/authenticated.guard';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent },
@@ -15,10 +14,11 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'icons',          component: IconsComponent },
     { path: 'maps',           component: MapsComponent },
     {
-        path: 'combos',
+        path: 'combo',
         children: [
           {
             path: '',
+            canActivate: [ AuthenticatedGuard ],
             loadChildren: () => import('src/app/pages/combos/combos.module').then(m => m.CombosModule)
           }
         ]
@@ -28,7 +28,8 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: () => import('src/app/pages/cuotas/cuotas-routing.module').then(m => m.CuotasRoutingModule)
+            canActivate: [ AuthenticatedGuard ],
+            loadChildren: () => import('src/app/pages/cuota/cuota.module').then(m => m.CuotaModule)
           }
         ]
     },
@@ -37,6 +38,7 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
+            canActivate: [ AuthenticatedGuard ],
             loadChildren: () => import('src/app/pages/chatmensaje/chatsmensajemodule').then(m => m.ChatsModule)
           }
         ]
@@ -46,6 +48,7 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
+            canActivate: [ AuthenticatedGuard ],
             loadChildren: () => import('src/app/pages/especialdiad-operario/especialdiad-operario.module').then(m => m.EspecialdiadOperarioModule)
           }
         ]
@@ -55,6 +58,7 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
+            canActivate: [ AuthenticatedGuard ],
             loadChildren: () => import('src/app/pages/especialidad/especialidades.module').then(m => m.EspecialidadesModule)
           }
         ]
@@ -64,7 +68,18 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
+            canActivate: [ AuthenticatedGuard ],
             loadChildren: () => import('src/app/pages/especialidad-maquinaria/especialidadmaquinaria.module').then(m => m.EspecialidadMaquinariaModule)
+          }
+        ]
+    },
+    {
+        path: 'evidancia',
+        children: [
+          {
+            path: '',
+            canActivate: [ AuthenticatedGuard ],
+            loadChildren: () => import('src/app/pages/evidencia/evidencia.module').then(m => m.EvidenciaModule)
           }
         ]
     },
@@ -73,37 +88,28 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
+            canActivate: [ AuthenticatedGuard ],
             loadChildren: () => import('src/app/pages/factura/factura.module').then(m => m.FacturaModule)
           }
         ]
     },
     {
-        path: 'evidencia',
-        children: [
-          {
-            path: '',
-            loadChildren: () => import('src/app/pages/evidencia/evidencia.module').then(m => m.EvidenciaModule)
-          }
-        ]
-    },
-
-    {
         path: 'gobernante',
         children: [
           {
             path: '',
+            canActivate: [ AuthenticatedGuard ],
             loadChildren: () => import('src/app/pages/gobernante/gobernante.module').then(m => m.GobernanteModule)
           }
         ]
     },
-
-
     {
-        path: 'gobernantedepartamento',
+        path: 'gobernante-departamento',
         children: [
           {
             path: '',
-            loadChildren: () => import('src/app/pages/gobernantedepartamento/gobernantedepartamento.module').then(m => m.GobernanteDepartamentoModule)
+            canActivate: [ AuthenticatedGuard ],
+            loadChildren: () => import('src/app/pages/gobernante-departamento/gobernante-departamento.module').then(m => m.GobernanteDepartamentoModule)
           }
         ]
     },
@@ -112,16 +118,18 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
+            canActivate: [ AuthenticatedGuard ],
             loadChildren: () => import('src/app/pages/departamento/departamento.module').then(m => m.DepartamentoModule)
           }
         ]
     },
     {
-        path: 'gobernantemunicipio',
+        path: 'gobernante-municipio',
         children: [
           {
             path: '',
-            loadChildren: () => import('src/app/pages/gobernantemunicipio/gobernantemunicipio.module').then(m => m.GobernanteMunicipioModule)
+            canActivate: [ AuthenticatedGuard ],
+            loadChildren: () => import('src/app/pages/gobernante-municipio/gobernante-municipio.module').then(m => m.GobernanteMunicipioModule)
           }
         ]
     },
@@ -130,25 +138,27 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: () => import('src/app/pages/gps/gps.module').then(m => m.GpsModule)
+            canActivate: [ AuthenticatedGuard ],
+            loadChildren: () => import('src/app/pages/gps/gps.module').then(m => m.GPSModule)
           }
         ]
     },
  
-     {
-         path: 'mantenimiento',
-         children: [
-           {
-             path: '',
-            loadChildren: () => import('src/app/pages/mantenimiento/mantenimiento.module').then(m => m.MantenimientoModule)
-           }
-         ]
-     },
+    // {
+    //     path: 'mantenimiento',
+    //     children: [
+    //       {
+    //         path: '',
+    //         loadChildren: () => import('src/app/pages/mantenimiento/mantenimiento.module').then(m => m.MantenimientoModule)
+    //       }
+    //     ]
+    // },
     {
         path: 'maquina',
         children: [
           {
             path: '',
+            canActivate: [ AuthenticatedGuard ],
             loadChildren: () => import('src/app/pages/maquina/maquina.module').then(m => m.MaquinaModule)
           }
         ]
@@ -181,7 +191,7 @@ export const AdminLayoutRoutes: Routes = [
         ]
     },
     {
-        path: 'obra-municipal',
+        path: 'obramunicipal',
         children: [
           {
             path: '',
@@ -216,15 +226,15 @@ export const AdminLayoutRoutes: Routes = [
           }
         ]
     },
-     {
-         path: 'procedimientomantenimiento',
-         children: [
-           {
-             path: '',
-             loadChildren: () => import('src/app/pages/procedimientomantenimiento/procedimientomantenimiento.module').then(m => m.ProcedimientoMantenimientoModule)
-           }
-         ]
-     },
+    // {
+    //     path: 'procedimiento-mantenimiento',
+    //     children: [
+    //       {
+    //         path: '',
+    //         loadChildren: () => import('src/app/pages/procedimiento-mantenimiento/procedimiento-mantenimiento.module').then(m => m.ProcedimientoMantenimientoModule)
+    //       }
+    //     ]
+    // },
  
     {
         path: 'seguro',
@@ -249,7 +259,7 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: () => import('src/app/pages/tiposervicio/tiposervicio.module').then(m => m.TipoServicioModule)
+            loadChildren: () => import('src/app/pages/tipo-servicio/tipo-servicio.module').then(m => m.TipoServicioModule)
           }
         ]
     },
@@ -271,9 +281,4 @@ export const AdminLayoutRoutes: Routes = [
           }
         ]
     },
-    
-    { path: 'forgot-password', component: RequestResetPasswordComponent },
-
-    { path: 'reset-password-sent', component: ResetPasswordSentComponentComponent },
-
 ];

@@ -37,6 +37,9 @@ export class SeguroService {
   getMaquinas(): Observable<Maquina[]> {
     return this.http.get<Maquina[]>(`${environment.url_ms_negocio}/maquinas`);
   }
+  getAll(): Observable<Seguro[]> {
+    return this.http.get<Seguro[]>('http://127.0.0.1:3333/seguros');
+  }
 
   getOperarios(): Observable<Operario[]> {
     return this.http.get<Operario[]>(`${environment.url_ms_negocio}/operarios`);

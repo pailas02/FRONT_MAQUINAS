@@ -1,0 +1,40 @@
+<div class="header bg-gradient-danger pb-8 pt-5 pt-md-8"></div>
+
+<div class="container-fluid mt--7">
+  <div class="row">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-header bg-transparent">
+          <h3 class="mb-0">{{ mode === 'create' ? 'Crear Combo' : (mode === 'update' ? 'Editar Combo' : 'Ver Combo') }}</h3>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="onSubmit()" *ngIf="!isLoading && !errorLoading">
+            <div class="form-group">
+              <label for="servicio_id">Servicio</label>
+              <select class="form-control" id="servicio_id" name="servicio_id" [(ngModel)]="combo.servicio_id" [disabled]="mode === 'view'" required>
+                <option [ngValue]="undefined" disabled selected>Seleccione un servicio</option>
+                <option *ngFor="let servicio of servicios" [ngValue]="servicio.id">
+                  {{ servicio.id}}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group text-right">
+              <button type="button" class="btn btn-secondary" (click)="back()">Volver</button>
+              <button type="submit" class="btn btn-primary ml-2" *ngIf="mode !== 'view'">
+                {{ mode === 'create' ? 'Crear' : 'Guardar Cambios' }}
+              </button>
+            </div>
+          </form>
+
+          <div *ngIf="isLoading" class="text-center py-5">
+            <i class="fas fa-spinner fa-spin fa-2x"></i> Cargando...
+          </div>
+          <div *ngIf="errorLoading" class="alert alert-danger text-center">
+            Error al cargar los datos. Por favor, inténtalo de nuevo.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

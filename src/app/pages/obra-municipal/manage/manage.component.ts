@@ -56,7 +56,7 @@ export class ManageComponent implements OnInit {
   }
 
   back(): void {
-    this.router.navigate(['/obra-municipal/list']);
+    this.router.navigate(['/obramunicipal/list']);
   }
 
   create(): void {

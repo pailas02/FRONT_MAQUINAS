@@ -28,15 +28,15 @@ export class ListPolizaMaquinaComponent implements OnInit {
   }
 
   create(): void {
-    this.router.navigate(['/poliza-maquina/create']);
+    this.router.navigate(['/poliza/create']);
   }
 
   view(id: number | undefined): void {
-    if (id) this.router.navigate(['/poliza-maquina/view', id]);
+    if (id) this.router.navigate(['/poliza/view', id]);
   }
 
   edit(id: number | undefined): void {
-    if (id) this.router.navigate(['/poliza-maquina/update', id]);
+    if (id) this.router.navigate(['/poliza/update', id]);
   }
 
   delete(id: number | undefined): void {

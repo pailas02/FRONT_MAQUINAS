@@ -6,6 +6,11 @@ import { PolizaMaquinaService } from 'src/app/services/poliza/poliza.service';
 import Swal from 'sweetalert2';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { Maquina } from 'src/app/models/maquina.model';
+import { Seguro } from 'src/app/models/seguro.model';
+import { MaquinaService } from 'src/app/services/maquina/maquina.service';
+import { SeguroService } from 'src/app/services/seguro/seguro.service';
+
 
 @Component({
   selector: 'app-manage-poliza-maquina',
@@ -15,18 +20,21 @@ export class ManagePolizaMaquinaComponent implements OnInit {
   form!: FormGroup;
   mode: 'create' | 'view' | 'update' = 'create';
   isLoading = false;
-  tiposMaquina = ['TODO_RIESGO_MAQUINARIA', 'RC_MAQUINARIA'];
-  tiposOperario = ['RC_OPERARIO', 'ACCIDENTE_OPERARIO'];
+  maquinas: Maquina[] = [];
+  seguros: Seguro[] = [];
+
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private fb: FormBuilder,
-    private service: PolizaMaquinaService
+    private service: PolizaMaquinaService,
+    private maquinaService: MaquinaService,
+  private seguroService: SeguroService
   ) {}
 
   ngOnInit(): void {
-    this.initForm();
+  this.maquinaService.getAll().subscribe(data => this.maquinas = data);
+  this.seguroService.getAll().subscribe(data => this.seguros = data);
 
     const path = this.route.snapshot.url.map(s => s.path).join('/');
     if (path.includes('view')) this.mode = 'view';
@@ -63,7 +71,7 @@ export class ManagePolizaMaquinaComponent implements OnInit {
     this.service.view(id).pipe(
       catchError(() => {
         Swal.fire('Error', 'No se pudo cargar la póliza.', 'error');
-        this.router.navigate(['/poliza-maquina/list']);
+        this.router.navigate(['/poliza/list']);
         return of(null);
       })
     ).subscribe(data => {
@@ -116,7 +124,7 @@ export class ManagePolizaMaquinaComponent implements OnInit {
       this.service.create(payload).subscribe({
         next: () => {
           Swal.fire('Creado', 'Registro guardado.', 'success').then(() =>
-            this.router.navigate(['/poliza-maquina/list'])
+            this.router.navigate(['/poliza/list'])
           );
         },
         error: (err) => {
@@ -130,7 +138,7 @@ export class ManagePolizaMaquinaComponent implements OnInit {
       this.service.update({ id, ...payload }).subscribe({
         next: () => {
           Swal.fire('Actualizado', 'Registro actualizado.', 'success').then(() =>
-            this.router.navigate(['/poliza-maquina/list'])
+            this.router.navigate(['/poliza/list'])
           );
         },
         error: (err) => {
@@ -143,7 +151,7 @@ export class ManagePolizaMaquinaComponent implements OnInit {
   }
 
   back(): void {
-    this.router.navigate(['/poliza-maquina/list']);
+    this.router.navigate(['/poliza/list']);
   }
 
   get f() {
