@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Combo } from 'src/app/models/combo.model';
 import { Servicio } from 'src/app/models/servicio.model'; // Para el selector de servicio
-import { ComboService } from '../../../services/combo/combos.service';
+import { CombosService } from '../../../services/combo/combos.service';
 import { ServicioService } from '../../../services/servicio/servicio.service'; // Para obtener la lista de servicios
 import Swal from 'sweetalert2';
 import { of, forkJoin } from 'rxjs';
@@ -11,7 +11,7 @@ import { catchError, finalize } from 'rxjs/operators';
 @Component({
   selector: 'app-manage', // Selector de tu componente
   templateUrl: './manage.component.html', // Archivo HTML asociado
-  styleUrls: ['./manage.component.scss']
+  // styleUrls: ['./manage.component.scss']
 })
 export class ManageComponent implements OnInit {
 
@@ -23,7 +23,7 @@ export class ManageComponent implements OnInit {
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    private comboService: ComboService,
+    private CombosService: CombosService,
     private servicioService: ServicioService, // Inyecta el servicio de Servicio
     private router: Router
   ) {
@@ -58,7 +58,7 @@ export class ManageComponent implements OnInit {
 
     // Si estamos en modo ver o actualizar, también cargamos el combo
     const combo$ = (this.mode === 'view' || this.mode === 'update') ?
-      this.comboService.view(this.activatedRoute.snapshot.params.id).pipe(
+      this.CombosService.view(this.activatedRoute.snapshot.params.id).pipe(
         catchError(error => {
           console.error('Error al obtener el combo:', error);
           Swal.fire('Error', 'No se pudo cargar el combo. Por favor, inténtalo de nuevo.', 'error');
@@ -110,7 +110,7 @@ export class ManageComponent implements OnInit {
     const comboToCreate = { ...this.combo };
     delete comboToCreate.id; // Asegúrate de que el ID no se envíe al crear
 
-    this.comboService.create(comboToCreate).pipe(
+    this.CombosService.create(comboToCreate).pipe(
       catchError(error => {
         console.error('Error al crear el combo:', error);
         Swal.fire('Error', 'No se pudo crear el registro. Verifica los datos.', 'error');
@@ -133,7 +133,7 @@ export class ManageComponent implements OnInit {
     this.isLoading = true;
     const comboToUpdate = { ...this.combo };
 
-    this.comboService.update(comboToUpdate).pipe(
+    this.CombosService.update(comboToUpdate).pipe(
       catchError(error => {
         console.error('Error al actualizar el combo:', error);
         Swal.fire('Error', 'No se pudo actualizar el registro. Verifica los datos.', 'error');
@@ -169,7 +169,7 @@ export class ManageComponent implements OnInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.comboService.delete(id).subscribe({
+        this.CombosService.delete(id).subscribe({
           next: () => {
             Swal.fire('¡Eliminado!', 'Registro eliminado correctamente.', 'success');
             this.router.navigate(['/combo/list']);

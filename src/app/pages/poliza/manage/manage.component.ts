@@ -22,6 +22,8 @@ export class ManagePolizaMaquinaComponent implements OnInit {
   isLoading = false;
   maquinas: Maquina[] = [];
   seguros: Seguro[] = [];
+  tiposOperario: string[] = ['TIPO1', 'TIPO2']; // Reemplaza con los tipos válidos para operario
+  tiposMaquina: string[] = ['TIPO3', 'TIPO4']; // Reemplaza con los tipos válidos para máquina
 
 
   constructor(
@@ -29,7 +31,8 @@ export class ManagePolizaMaquinaComponent implements OnInit {
     private router: Router,
     private service: PolizaMaquinaService,
     private maquinaService: MaquinaService,
-  private seguroService: SeguroService
+    private seguroService: SeguroService,
+    private fb: FormBuilder // <-- Agregado FormBuilder como propiedad
   ) {}
 
   ngOnInit(): void {

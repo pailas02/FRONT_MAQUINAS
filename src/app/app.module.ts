@@ -45,7 +45,7 @@ export const authConfig: AuthConfig = {
     RouterModule,
     AppRoutingModule,
     // --- NUEVO: Configuración de OAuthModule ---
-    OAuthModule.forRoot(),
+    //OAuthModule.forRoot(),
     OAuthModule.forRoot({
       resourceServer: {
         allowedUrls: [environment.url_ms_security + '/api'], // URLs de tu backend Spring Boot que requieren token de acceso (de Google)

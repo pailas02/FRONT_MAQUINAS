@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-@Component({
+@Component({  
   selector: 'app-manage-usuario',
   templateUrl: './manage.component.html'
 })

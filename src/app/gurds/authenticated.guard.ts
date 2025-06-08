@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
-import { SecurityService } from '../services/security.service';
+// Update the import path if the service is located elsewhere, for example:
+import { SecurityService } from '../services/security/security.service';
 
 @Injectable({
   providedIn: 'root'

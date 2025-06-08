@@ -76,16 +76,23 @@ export class SecurityService {
     // deberías enviar `accessToken` a un endpoint de tu backend, y luego recibir el JWT de tu backend
     // para guardarlo con `saveSession`.
     // Ejemplo:
-     this.http.post(`${environment.url_ms_security}/api/auth/google`, { accessToken }).subscribe(
-       backendResponse => {
-         this.saveSession(backendResponse); // Guarda la sesión generada por tu backend
-         console.log('Login Google procesado por backend');
-       },
-       error => {
-         console.error('Error al procesar login de Google en el backend:', error);
-         Swal.fire('Error de Login', 'No se pudo completar el login con Google.', 'error');
-       }
-     );
+    this.http.post(`${environment.url_ms_security}/api/auth/google`, { accessToken }).subscribe(
+      backendResponse => {
+        console.log('Respuesta del backend tras login Google:', backendResponse);
+        const resp: any = backendResponse;
+        if (resp && resp.token) {
+          this.saveSession(resp); // Guarda la sesión generada por tu backend
+          console.log('Login Google procesado por backend y sesión guardada.');
+        } else {
+          console.error('El backend NO devolvió un token válido:', backendResponse);
+          Swal.fire('Error de Login', 'El backend no devolvió un token válido tras el login con Google.', 'error');
+        }
+      },
+      error => {
+        console.error('Error al procesar login de Google en el backend:', error);
+        Swal.fire('Error de Login', 'No se pudo completar el login con Google.', 'error');
+      }
+    );
     // Si no tienes un endpoint de backend para procesar el token de Google y solo usas el token de Google en el frontend:
     // this.saveSession(sessionUser); // Guardar la sesión de Google directamente
   }

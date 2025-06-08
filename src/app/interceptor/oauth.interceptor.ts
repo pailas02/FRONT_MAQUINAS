@@ -9,9 +9,10 @@ import {
 import { Observable, throwError } from 'rxjs'; // Importa throwError para manejo de errores
 import { catchError } from 'rxjs/operators'; // Importa catchError desde 'rxjs/operators'
 
-import { SecurityService } from '../services/security.service'; // Asegúrate de actualizar esta ruta
+import { SecurityService } from '../services/security/security.service';
 import { Router } from '@angular/router'; // Importa Router
 import Swal from 'sweetalert2'; // Asumo que usas SweetAlert2, si no, actualiza o remueve
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -35,10 +36,11 @@ export class AuthInterceptor implements HttpInterceptor {
 
     const publicRoutes = ['/login', '/token-validation'];
     const isPublicRoute = publicRoutes.some(route => request.url.includes(route));
+    const isOauthSuccess = request.url.includes('/auth/oauth-success');
 
-    if (isPublicRoute) {
+    if (isPublicRoute || isOauthSuccess) {
       if (!environment.production) {
-        console.log("🔓 Ruta pública detectada, no se adjunta token:", request.url);
+        console.log("🔓 Ruta pública u OauthSuccess detectada, no se adjunta token:", request.url);
       }
       return next.handle(request);
     }
@@ -56,13 +58,13 @@ export class AuthInterceptor implements HttpInterceptor {
       },
     });
 
-    if (!environment.production) {
+    if (environment) {
       console.log("✅ Token adjuntado a la solicitud:", request.url);
     }
 
     return next.handle(authRequest).pipe(
       catchError((error: HttpErrorResponse) => {
-        if (!environment.production) {
+        if (environment) {
           console.error('❌ Error en la solicitud HTTP:', error);
         }
 

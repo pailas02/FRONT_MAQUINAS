@@ -29,7 +29,7 @@ export const AdminLayoutRoutes: Routes = [
           {
             path: '',
             canActivate: [ AuthenticatedGuard ],
-            loadChildren: () => import('src/app/pages/cuota/cuota.module').then(m => m.CuotaModule)
+            loadChildren: () => import('src/app/pages/cuota/cuota.module').then(m => m.CuotasModule)
           }
         ]
     },
@@ -109,7 +109,7 @@ export const AdminLayoutRoutes: Routes = [
           {
             path: '',
             canActivate: [ AuthenticatedGuard ],
-            loadChildren: () => import('src/app/pages/gobernante-departamento/gobernante-departamento.module').then(m => m.GobernanteDepartamentoModule)
+            loadChildren: () => import('src/app/pages/gobernantedepartamento/gobernantedepartamento.module').then(m => m.GobernanteDepartamentoModule)
           }
         ]
     },
@@ -129,7 +129,7 @@ export const AdminLayoutRoutes: Routes = [
           {
             path: '',
             canActivate: [ AuthenticatedGuard ],
-            loadChildren: () => import('src/app/pages/gobernante-municipio/gobernante-municipio.module').then(m => m.GobernanteMunicipioModule)
+            loadChildren: () => import('src/app/pages/gobernantemunicipio/gobernantemunicipio.module').then(m => m.GobernanteMunicipioModule)
           }
         ]
     },
@@ -139,7 +139,7 @@ export const AdminLayoutRoutes: Routes = [
           {
             path: '',
             canActivate: [ AuthenticatedGuard ],
-            loadChildren: () => import('src/app/pages/gps/gps.module').then(m => m.GPSModule)
+            loadChildren: () => import('src/app/pages/gps/gps.module').then(m => m.GpsModule)
           }
         ]
     },
@@ -259,7 +259,7 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: () => import('src/app/pages/tipo-servicio/tipo-servicio.module').then(m => m.TipoServicioModule)
+            loadChildren: () => import('src/app/pages/tiposervicio/tiposervicio.module').then(m => m.TipoServicioModule)
           }
         ]
     },
