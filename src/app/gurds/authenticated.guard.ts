@@ -8,7 +8,7 @@ import { SecurityService } from '../services/security.service';
 })
 export class AuthenticatedGuard implements CanActivate {
   constructor(private securityService: SecurityService,
-    private router : Router
+    private router: Router
   ) { }
   canActivate(
     route: ActivatedRouteSnapshot,
@@ -17,6 +17,7 @@ export class AuthenticatedGuard implements CanActivate {
         this.router.navigate(['/login']);
         return true;
       } else {
+        this.router.navigate(['/dashboard']);
         return false;
       }
   }
