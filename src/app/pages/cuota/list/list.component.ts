@@ -37,7 +37,7 @@ export class ListCuotaComponent implements OnInit {
       return;
     }
 
-    this.router.navigate([`/cuotas/update`, id]).then(
+    this.router.navigate([`/cuota/update`, id]).then(
       success => {
         if (success) {
           Swal.fire({
@@ -101,7 +101,7 @@ export class ListCuotaComponent implements OnInit {
           text: 'Registro actualizado correctamente.',
           icon: 'success'
         }).then(() => {
-          this.router.navigate(['/cuotas/list']);
+          this.router.navigate(['/cuota/list']);
         });
       },
       error => {
@@ -113,5 +113,8 @@ export class ListCuotaComponent implements OnInit {
         });
       }
     );
+  }
+  create(): void {
+    this.router.navigate(['/cuota/create']);
   }
 }

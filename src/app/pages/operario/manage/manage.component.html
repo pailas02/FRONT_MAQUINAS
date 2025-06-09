@@ -9,21 +9,25 @@
           <h3 class="mb-0" *ngIf="mode === 'view'">Detalle del Operario</h3>
         </div>
         <div class="card-body container">
-          <form (ngSubmit)="onSubmit()" *ngIf="!isLoading" #form="ngForm">
+          <form [formGroup]="operarioForm" (ngSubmit)="onSubmit()" *ngIf="!isLoading">
             <div class="row mb-3">
               <div class="col-md-3">User ID</div>
               <div class="col-md-9">
-                <input type="text" class="form-control" [(ngModel)]="operario.user_id" name="user_id" [disabled]="mode === 'view'" required>
+                <input type="text" class="form-control" formControlName="user_id" [disabled]="mode === 'view'">
+                <div class="invalid-feedback d-block" *ngIf="operarioForm.get('user_id')?.invalid && operarioForm.get('user_id')?.touched">
+                  El User ID es obligatorio.
+                </div>
               </div>
             </div>
-
             <div class="row mb-3">
               <div class="col-md-3">Experiencia</div>
               <div class="col-md-9">
-                <textarea class="form-control" [(ngModel)]="operario.experiencia" name="experiencia" [disabled]="mode === 'view'" rows="3" required></textarea>
+                <textarea class="form-control" formControlName="experiencia" [disabled]="mode === 'view'" rows="3"></textarea>
+                <div class="invalid-feedback d-block" *ngIf="operarioForm.get('experiencia')?.invalid && operarioForm.get('experiencia')?.touched">
+                  La experiencia es obligatoria.
+                </div>
               </div>
             </div>
-
             <div class="row mt-4">
               <div class="col-md-12 text-right">
                 <button type="button" class="btn btn-secondary mr-2" (click)="back()">Volver</button>

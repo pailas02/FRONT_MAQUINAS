@@ -25,9 +25,12 @@
             <div class="row align-items-center mb-3">
               <div class="col-md-3">Especialidad</div>
               <div class="col-md-9">
-                <input type="text" class="form-control" formControlName="especialidad"
+                <select class="form-control" formControlName="especialidad"
                   [ngClass]="{'is-invalid': maquinaForm.get('especialidad')?.invalid && maquinaForm.get('especialidad')?.touched}"
                   [disabled]="mode === 1">
+                  <option value="">Seleccione una especialidad</option>
+                  <option *ngFor="let esp of especialidades" [value]="esp.nombre">{{esp.nombre}}</option>
+                </select>
                 <div class="invalid-feedback" *ngIf="maquinaForm.get('especialidad')?.touched">
                   <div *ngIf="maquinaForm.get('especialidad')?.errors?.['required']">La especialidad es requerida</div>
                   <div *ngIf="maquinaForm.get('especialidad')?.errors?.['minlength']">Mínimo 3 caracteres</div>

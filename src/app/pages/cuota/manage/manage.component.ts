@@ -18,31 +18,6 @@ export class ManageComponent implements OnInit {
   cuotaForm: FormGroup;
   availableServices: Servicio[] = [];
 
-  paymentData = {
-    card: {
-      number: '',
-      exp_year: '',
-      exp_month: '',
-      cvc: ''
-    },
-    customer: {
-      name: '',
-      last_name: '',
-      email: '', 
-      phone: '',
-      doc_number: ''
-    },
-    due: {
-      id: '',
-      id_servicio: '',
-      valor: ''
-    },
-    description: '',
-    tax: '',
-    tax_base: '',
-    dues: ''
-  };
-
   constructor(
     private activateRoute: ActivatedRoute,
     private cuotasService: CuotasService,
@@ -106,19 +81,19 @@ export class ManageComponent implements OnInit {
 
   private createForm(): void {
     this.cuotaForm = this.fb.group({
-      id_servicio: [[], [
-        Validators.required,
+      id_servicio: [null, [
+        Validators.required
       ]],
       valor: ['', [
         Validators.required,
-        Validators.min(0),
-        Validators.pattern(/^[0-9]+([.][0-9]{0,2})?$/) 
+        Validators.min(1),
+        Validators.pattern(/^\d+(\.\d{1,2})?$/)
       ]]
     });
   }
 
   back(): void {
-    this.router.navigate(['/cuotas/list']);
+    this.router.navigate(['/cuota/list']);
   }
 
   create(): void {
@@ -130,7 +105,7 @@ export class ManageComponent implements OnInit {
       }).subscribe({
         next: () => {
           Swal.fire('Éxito', 'Cuota creada correctamente', 'success');
-          this.router.navigate(['/cuotas/list']);
+          this.router.navigate(['/cuota/list']);
         },
         error: (error) => {
           console.error('Error creating cuota:', error);
@@ -156,7 +131,7 @@ export class ManageComponent implements OnInit {
       }).subscribe({
         next: () => {
           Swal.fire('Éxito', 'Cuota actualizada correctamente', 'success');
-          this.router.navigate(['/cuotas/list']);
+          this.router.navigate(['/cuota/list']);
         },
         error: (error) => {
           console.error('Error updating cuota:', error);

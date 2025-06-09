@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 
@@ -54,4 +54,17 @@ export class AuthService {
         }
       });
   }
+
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders({
+      Authorization: token ? `Bearer ${token}` : ''
+    });
+  }
+
+  // Si tienes métodos que hacen peticiones http, agrégales { headers: this.getAuthHeaders() }
+  // Ejemplo:
+  // this.http.get(url, { headers: this.getAuthHeaders() })
+  // this.http.post(url, data, { headers: this.getAuthHeaders() })
+  // ...
 }

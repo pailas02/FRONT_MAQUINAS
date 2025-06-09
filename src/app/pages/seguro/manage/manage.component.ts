@@ -64,7 +64,7 @@ export class ManageComponent implements OnInit {
     this.seguroService.create(this.seguro).subscribe({
       next: () => {
         Swal.fire('Creado', 'Registro creado correctamente.', 'success')
-          .then(() => this.router.navigate(['/seguros/list']));
+          .then(() => this.router.navigate(['/seguro/list']));
       },
       error: (error) => {
         console.error('Error al crear seguro:', error);
@@ -77,7 +77,7 @@ export class ManageComponent implements OnInit {
     this.seguroService.update(this.seguro).subscribe({
       next: () => {
         Swal.fire('Actualizado', 'Registro actualizado correctamente.', 'success')
-          .then(() => this.router.navigate(['/seguros/list']));
+          .then(() => this.router.navigate(['/seguro/list']));
       },
       error: (error) => {
         console.error('Error al actualizar seguro:', error);
@@ -101,7 +101,7 @@ export class ManageComponent implements OnInit {
         this.seguroService.delete(id).subscribe({
           next: () => {
             Swal.fire('Eliminado', 'Registro eliminado correctamente.', 'success');
-            this.router.navigate(['/seguros/list']);
+            this.router.navigate(['/seguro/list']);
           },
           error: (error) => {
             console.error('Error al eliminar seguro:', error);
@@ -113,7 +113,7 @@ export class ManageComponent implements OnInit {
   }
 
   back(): void {
-    this.router.navigate(['/seguros/list']);
+    this.router.navigate(['/seguro/list']);
   }
 
   loadMaquinas(): void {

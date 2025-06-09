@@ -3,6 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Maquina } from 'src/app/models/maquina.model';
 import { MaquinaService } from 'src/app/services/maquina/maquina.service';
+import { Especialidad } from 'src/app/models/especialidad.model';
+import { EspecialidadService } from 'src/app/services/especialidad/especialidad.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -14,6 +16,7 @@ export class ManageComponent implements OnInit {
   mode: number; //1->View, 2->Create, 3-> Update
   maquina: Maquina;
   maquinaForm: FormGroup;
+  especialidades: Especialidad[] = [];
 
   // Estados y disponibilidad válidos
   estadosValidos = ['Activo', 'Inactivo', 'En Mantenimiento', 'Fuera de Servicio'];
@@ -26,7 +29,8 @@ export class ManageComponent implements OnInit {
     private activateRoute: ActivatedRoute,
     private someMaquina: MaquinaService,
     private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private especialidadService: EspecialidadService
   ) {
     this.maquina = { id: 0 };
     this.createForm();
@@ -85,6 +89,16 @@ export class ManageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Precarga de especialidades
+    this.especialidadService.list().subscribe({
+      next: (especialidades) => {
+        this.especialidades = especialidades;
+      },
+      error: (error) => {
+        console.error('Error al cargar especialidades:', error);
+      }
+    });
+
     const currentUrl = this.activateRoute.snapshot.url.join('/');
     if (currentUrl.includes('view')) {
       this.mode = 1;

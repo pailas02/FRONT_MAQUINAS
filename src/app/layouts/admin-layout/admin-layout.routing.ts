@@ -18,7 +18,7 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
-            canActivate: [ AuthenticatedGuard ],
+            
             loadChildren: () => import('src/app/pages/combos/combos.module').then(m => m.CombosModule)
           }
         ]
@@ -28,7 +28,7 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
-            canActivate: [ AuthenticatedGuard ],
+            
             loadChildren: () => import('src/app/pages/cuota/cuota.module').then(m => m.CuotasModule)
           }
         ]
@@ -38,7 +38,7 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
-            canActivate: [ AuthenticatedGuard ],
+            
             loadChildren: () => import('src/app/pages/chatmensaje/chatsmensajemodule').then(m => m.ChatsModule)
           }
         ]
@@ -48,7 +48,7 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
-            canActivate: [ AuthenticatedGuard ],
+            
             loadChildren: () => import('src/app/pages/especialdiad-operario/especialdiad-operario.module').then(m => m.EspecialdiadOperarioModule)
           }
         ]
@@ -58,7 +58,7 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
-            canActivate: [ AuthenticatedGuard ],
+            
             loadChildren: () => import('src/app/pages/especialidad/especialidades.module').then(m => m.EspecialidadesModule)
           }
         ]
@@ -68,7 +68,7 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
-            canActivate: [ AuthenticatedGuard ],
+            
             loadChildren: () => import('src/app/pages/especialidad-maquinaria/especialidadmaquinaria.module').then(m => m.EspecialidadMaquinariaModule)
           }
         ]
@@ -78,7 +78,7 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
-            canActivate: [ AuthenticatedGuard ],
+            
             loadChildren: () => import('src/app/pages/evidencia/evidencia.module').then(m => m.EvidenciaModule)
           }
         ]
@@ -88,7 +88,7 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
-            canActivate: [ AuthenticatedGuard ],
+            
             loadChildren: () => import('src/app/pages/factura/factura.module').then(m => m.FacturaModule)
           }
         ]
@@ -98,7 +98,7 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
-            canActivate: [ AuthenticatedGuard ],
+            
             loadChildren: () => import('src/app/pages/gobernante/gobernante.module').then(m => m.GobernanteModule)
           }
         ]
@@ -108,7 +108,7 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
-            canActivate: [ AuthenticatedGuard ],
+            
             loadChildren: () => import('src/app/pages/gobernantedepartamento/gobernantedepartamento.module').then(m => m.GobernanteDepartamentoModule)
           }
         ]
@@ -118,7 +118,7 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
-            canActivate: [ AuthenticatedGuard ],
+            
             loadChildren: () => import('src/app/pages/departamento/departamento.module').then(m => m.DepartamentoModule)
           }
         ]
@@ -128,7 +128,7 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
-            canActivate: [ AuthenticatedGuard ],
+            
             loadChildren: () => import('src/app/pages/gobernantemunicipio/gobernantemunicipio.module').then(m => m.GobernanteMunicipioModule)
           }
         ]
@@ -138,7 +138,7 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
-            canActivate: [ AuthenticatedGuard ],
+            
             loadChildren: () => import('src/app/pages/gps/gps.module').then(m => m.GpsModule)
           }
         ]
@@ -158,7 +158,6 @@ export const AdminLayoutRoutes: Routes = [
         children: [
           {
             path: '',
-            canActivate: [ AuthenticatedGuard ],
             loadChildren: () => import('src/app/pages/maquina/maquina.module').then(m => m.MaquinaModule)
           }
         ]

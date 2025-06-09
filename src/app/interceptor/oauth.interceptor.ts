@@ -39,10 +39,13 @@ export class AuthInterceptor implements HttpInterceptor {
     const isOauthSuccess = request.url.includes('/auth/oauth-success');
 
     if (isPublicRoute || isOauthSuccess) {
+      console.log("🔓 Ruta pública detectada, no se adjunta token:", request.url);
       if (!environment.production) {
-        console.log("🔓 Ruta pública u OauthSuccess detectada, no se adjunta token:", request.url);
+        console.warn("🔓 Ruta pública detectada, no se adjunta token:", request.url);
       }
+      console.log("🔓 Ruta pública u AuthSuccess detectada, no se adjunta token:", request.url);
       return next.handle(request);
+
     }
 
     if (!token) {

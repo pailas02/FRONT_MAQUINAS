@@ -15,11 +15,6 @@
         </div>
         <div class="card-body container">
           <div class="row">
-            <div class="col-3">ID</div>
-            <div class="col-9"><input type="text" class="form-control" [(ngModel)]="seguro.id" disabled></div>
-          </div>
-          <br>
-          <div class="row">
             <div class="col-3">Nombre</div>
             <div class="col-9"><input type="text" class="form-control" [(ngModel)]="seguro.nombre" [disabled]="mode==1"></div>
           </div>
@@ -32,16 +27,6 @@
           <div class="row">
             <div class="col-3">Costo</div>
             <div class="col-9"><input type="number" class="form-control" [(ngModel)]="seguro.costo" [disabled]="mode==1"></div>
-          </div>
-          <br>
-          <div class="row">
-            <div class="col-3">ID Maquina</div>
-            <div class="col-9"><input type="text" class="form-control" [(ngModel)]="seguro.maquianaId" [disabled]="mode==1"></div>
-          </div>
-          <br>
-          <div class="row">
-            <div class="col-3">ID Operario</div>
-            <div class="col-9"><input type="text" class="form-control" [(ngModel)]="seguro.operarioId" [disabled]="mode==1"></div>
           </div>
           <div class="row">
             <div class="col-3"></div>

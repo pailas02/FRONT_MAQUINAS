@@ -92,7 +92,7 @@ export class ListMaquinaComponent implements OnInit {
     });
   }
   createMachine() {
-  this.router.navigate(['/maquinas/create']);
+  this.router.navigate(['/maquina/create']);
 }
 
 }

@@ -1,4 +1,3 @@
-<p>list works!</p>
 <!-- list.component-cuotas.html -->
 <div class="header bg-gradient-primary py-6">
   <div class="container-fluid">
@@ -27,7 +26,7 @@
               <h3 class="mb-0 text-primary">Listado de Cuotas</h3>
             </div>
             <div class="col text-right">
-              <button class="btn btn-sm btn-primary">
+              <button class="btn btn-success" (click)="create()">
                 <i class="fas fa-plus mr-2"></i>Nueva Cuota
               </button>
             </div>
@@ -51,10 +50,10 @@
                   <td>{{ cuota.valor | currency }}</td>
                   <td>
                     <div class="btn-group">
-                      <button class="btn btn-sm btn-primary" (click)="edit(cuota.id)">
+                      <button  (click)="edit(cuota.id)">
                         <i class="fas fa-edit"></i>
                       </button>
-                      <button class="btn btn-sm btn-danger" (click)="delete(cuota.id)">
+                      <button  (click)="delete(cuota.id)">
                         <i class="fas fa-trash"></i>
                       </button>
                     </div>
